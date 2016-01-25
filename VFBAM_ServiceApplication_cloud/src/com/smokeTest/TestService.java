@@ -14,7 +14,7 @@ public class TestService {
     @Produces("application/json")
 	public TestReturnVO participantLoginVerify(){		
 		TestReturnVO testReturnVO=new TestReturnVO();
-		testReturnVO.setVoName("TestVO");
+		testReturnVO.setVoName("TestVO01");
 		testReturnVO.setTiemStamp(new Date().getTime());
 		return testReturnVO;		
 	}
