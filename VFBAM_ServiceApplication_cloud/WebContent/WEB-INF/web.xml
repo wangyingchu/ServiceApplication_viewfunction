@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>VFBAM_ServiceApplication</display-name>
+	
+	<context-param>  
+        <param-name>contextConfigLocation</param-name>  
+        <param-value>WEB-INF/beans.xml</param-value>  
+    </context-param>        
+    
+    <context-param>
+        <description>
+        Vaadin production mode</description>
+        <param-name>productionMode</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    
+    <listener>
+        <listener-class>com.viewfunction.processRepository.util.ServletProcessEngineInitializer</listener-class>
+    </listener>
+        
+    <listener>
+		<listener-class>com.viewfunction.vfmab.restful.util.ServiceResourceInitializer</listener-class>
+	</listener>
+
+    <listener>  
+        <listener-class>  
+            org.springframework.web.context.ContextLoaderListener  
+        </listener-class>  
+    </listener> 	  
+    <!-- 配置CXF -->  
+    <servlet>  
+        <servlet-name>CXFServlet</servlet-name>           
+        <servlet-class>  
+            org.apache.cxf.transport.servlet.CXFServlet  
+        </servlet-class>  
+        <load-on-startup>1</load-on-startup>  
+    </servlet>    
+    <servlet-mapping>  
+        <servlet-name>CXFServlet</servlet-name>  
+        <url-pattern>/ws/*</url-pattern>  
+    </servlet-mapping>    
+
+    <servlet>
+        <servlet-name>VFBPM_AdminCenterApp</servlet-name>
+        <servlet-class>com.vaadin.terminal.gwt.server.ApplicationServlet</servlet-class>
+        <init-param>
+            <description>
+            Vaadin application class to start</description>
+            <param-name>application</param-name>
+            <param-value>com.viewfunction.vfbpm.adminCenter.VFBPM_AdminCenterApplication</param-value>
+        </init-param>
+        <init-param>
+            <description>
+            Application widgetset</description>
+            <param-name>widgetset</param-name>
+            <param-value>com.viewfunction.vfbpm.adminCenter.widgetset.Vfbam_serverapplicationWidgetset</param-value>
+        </init-param>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>VFBPM_UserClientApp</servlet-name>
+        <servlet-class>com.vaadin.terminal.gwt.server.ApplicationServlet</servlet-class>
+        <init-param>
+            <description>
+            Vaadin user client application class to start</description>
+            <param-name>application</param-name>
+            <param-value>com.viewfunction.vfbpm.adminCenter.VFBPM_UserClientApplication</param-value>
+        </init-param>
+        <init-param>
+            <description>
+            Application widgetset</description>
+            <param-name>widgetset</param-name>
+            <param-value>com.viewfunction.vfbpm.adminCenter.widgetset.Vfbam_serverapplicationWidgetset</param-value>
+        </init-param>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>VFBPM_SysInfoApp</servlet-name>
+        <servlet-class>com.vaadin.terminal.gwt.server.ApplicationServlet</servlet-class>
+        <init-param>
+            <description>
+            Vaadin user client application class to start</description>
+            <param-name>application</param-name>
+            <param-value>com.viewfunction.vfbpm.adminCenter.VFBPM_SysInfoApplication</param-value>
+        </init-param>
+        <init-param>
+            <description>
+            Application widgetset</description>
+            <param-name>widgetset</param-name>
+            <param-value>com.viewfunction.vfbpm.adminCenter.widgetset.Vfbam_serverapplicationWidgetset</param-value>
+        </init-param>
+    </servlet>
+    
+    <servlet>
+      <servlet-name>Repository</servlet-name>
+      <servlet-class>com.viewfunction.contentRepository.util.ServletRepositoryInitializer</servlet-class>      
+      <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+    	<description>
+    	</description>
+    	<display-name>PreviewFileDownload</display-name>
+    	<servlet-name>PreviewFileDownload</servlet-name>
+    	<servlet-class>com.viewfunction.vfmab.restful.contentManagement.PreviewFileDownload</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>VFBPM_SysInfoApp</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>VFBPM_AdminCenterApp</servlet-name>
+        <url-pattern>/adminCenter/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>VFBPM_UserClientApp</servlet-name>
+        <url-pattern>/userClient/*</url-pattern>
+    </servlet-mapping>
+      
+    <servlet-mapping> 
+      <servlet-name>Repository</servlet-name> 
+      <url-pattern>/repository/*</url-pattern> 
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>PreviewFileDownload</servlet-name>
+    	<url-pattern>/PreviewFileDownload</url-pattern>
+    </servlet-mapping> 
+          
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>

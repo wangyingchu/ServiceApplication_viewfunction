@@ -1,0 +1,35 @@
+AVI - VLC
+Blank
+DIVX - VLC
+DOC - Word 2003
+FLV
+HTM - FireFox
+HTM - Opera
+HTML - FireFox
+HTML - Opera
+INI - Tools (icon from the Crystal SVG iconset)
+INI - Gear (icon from the Crystal SVG iconset)
+ISO
+JPG
+JPEG
+MHT - FireFox
+MHT - Opera
+MHTML - FireFox
+MHTML - Opera
+MKV - VLC
+MOV - VLC
+MP3 - VLC
+MPG - VLC
+PDF - Adobe Reader 7
+PDF - Adobe Reader 8
+PPT - PowerPoint 2003 x2
+PSD - Adobe PhotoShop CS2
+PSD - Adobe Photoshop CS3
+RTF
+SWF
+TORRENT
+TXT
+VLT - VLC
+WAV - VLC
+WMV - VLC
+XLS - 2003

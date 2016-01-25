@@ -1,0 +1,2 @@
+# Module com.viewfunction.vfbpm.adminCenter.widgetset.Vfbam_serverapplicationWidgetset
+# RPC service class, partial path of RPC policy file
