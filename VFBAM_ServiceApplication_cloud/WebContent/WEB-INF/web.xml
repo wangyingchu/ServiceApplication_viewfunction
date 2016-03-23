@@ -13,11 +13,11 @@
         <param-name>productionMode</param-name>
         <param-value>false</param-value>
     </context-param>
-    
+    <!--  
     <listener>
         <listener-class>com.viewfunction.processRepository.util.ServletProcessEngineInitializer</listener-class>
     </listener>
-        
+     -->   
     <listener>
 		<listener-class>com.viewfunction.vfmab.restful.util.ServiceResourceInitializer</listener-class>
 	</listener>
