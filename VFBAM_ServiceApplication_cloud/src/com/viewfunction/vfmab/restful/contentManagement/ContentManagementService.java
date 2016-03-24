@@ -3520,7 +3520,111 @@ public class ContentManagementService {
 			}				
 		}			
 		return null;	
-	}	
+	}
+	
+	@POST
+	@Path("/resetFileTags/")
+	@Produces("application/json")	
+	public String[] resetFileTags(DocumentTagOperationVO documentTagOperationVO){	
+		String activitySpace=documentTagOperationVO.getActivitySpaceName();		
+		ContentSpace activityContentSpace = null;		
+		ContentOperationHelper coh = ContentComponentFactory.getContentOperationHelper();
+		try {
+			activityContentSpace=ContentComponentFactory.connectContentSpace(activitySpace);			
+			if(documentTagOperationVO.getDocumentsOwnerType().equals(DocumentsOwnerType_participant)){
+				ParticipantFileVO participantFileVO=documentTagOperationVO.getParticipantFileInfo();				
+				String parentFolderPath=participantFileVO.getParentFolderPath();
+				String fileName=participantFileVO.getFileName();					
+				String participantName=participantFileVO.getParticipantName();						
+				String currentFolderFullPath="/"+ActivitySpace_ContentStore+"/"+Participant_ContentStore+"/"+participantName+parentFolderPath;				
+				BaseContentObject currentFolderContentObject=activityContentSpace.getContentObjectByAbsPath(currentFolderFullPath);				
+				if(currentFolderContentObject!=null){					
+					BaseContentObject fileContentObject=currentFolderContentObject.getSubContentObject(fileName);
+					if(fileContentObject==null){
+						return null;
+					}else{
+						BinaryContent documentContent=coh.getBinaryContent(currentFolderContentObject, fileName);	
+						documentContent.removeContentTags(documentContent.getContentTags());
+						String[] newTagValues=documentTagOperationVO.getTagValues();
+						return documentContent.addContentTags(newTagValues);
+					}						
+				}else{
+					return null;
+				}				
+			}else if(documentTagOperationVO.getDocumentsOwnerType().equals(DocumentsOwnerType_activity)){
+				ActivityTypeFileVO activityTypeFileVO=documentTagOperationVO.getActivityTypeFileInfo();
+				String parentFolderPath=activityTypeFileVO.getParentFolderPath();
+				String fileName=activityTypeFileVO.getFileName();
+				String activityType=activityTypeFileVO.getActivityName();
+				String activityId=activityTypeFileVO.getActivityId();		
+				String activityTypeFolderRootAbsPath="/"+activityType+"/";
+				String activityInstanceFolderRootPath=activityTypeFolderRootAbsPath+activityId+"/"+ActivityInstance_attachment;				
+				String currentFolderFullPath=activityInstanceFolderRootPath+parentFolderPath;			
+				BaseContentObject currentFolderContentObject=activityContentSpace.getContentObjectByAbsPath(currentFolderFullPath);
+				if(currentFolderContentObject!=null){					
+					BaseContentObject fileContentObject=currentFolderContentObject.getSubContentObject(fileName);
+					if(fileContentObject==null){
+						return null;
+					}else{
+						BinaryContent documentContent=coh.getBinaryContent(currentFolderContentObject, fileName);	
+						documentContent.removeContentTags(documentContent.getContentTags());
+						String[] newTagValues=documentTagOperationVO.getTagValues();
+						return documentContent.addContentTags(newTagValues);
+					}						
+				}else{
+					return null;
+				}					
+			}else if(documentTagOperationVO.getDocumentsOwnerType().equals(DocumentsOwnerType_applicationSpace)){
+				ApplicationSpaceFileVO applicationSpaceFileVO=documentTagOperationVO.getApplicationSpaceFileInfo();
+				String parentFolderPath=applicationSpaceFileVO.getParentFolderPath();
+				String fileName=applicationSpaceFileVO.getFileName();				
+				String currentFolderFullPath="/"+ActivitySpace_ContentStore+"/"+Space_ContentStore+parentFolderPath;
+				BaseContentObject currentFolderContentObject=activityContentSpace.getContentObjectByAbsPath(currentFolderFullPath);				
+				if(currentFolderContentObject!=null){					
+					BaseContentObject fileContentObject=currentFolderContentObject.getSubContentObject(fileName);
+					if(fileContentObject==null){
+						return null;
+					}else{
+						BinaryContent documentContent=coh.getBinaryContent(currentFolderContentObject, fileName);	
+						documentContent.removeContentTags(documentContent.getContentTags());
+						String[] newTagValues=documentTagOperationVO.getTagValues();
+						return documentContent.addContentTags(newTagValues);
+					}						
+				}else{
+					return null;
+				}								
+			}else if(documentTagOperationVO.getDocumentsOwnerType().equals(DocumentsOwnerType_role)){
+				RoleFileVO roleFileVO=documentTagOperationVO.getRoleFileInfo();				
+				String parentFolderPath=roleFileVO.getParentFolderPath();
+				String fileName=roleFileVO.getFileName();						
+				String roleName=roleFileVO.getRoleName();						
+				String currentFolderFullPath="/"+ActivitySpace_ContentStore+"/"+Role_ContentStore+"/"+roleName+parentFolderPath;				
+				BaseContentObject currentFolderContentObject=activityContentSpace.getContentObjectByAbsPath(currentFolderFullPath);				
+				if(currentFolderContentObject!=null){					
+					BaseContentObject fileContentObject=currentFolderContentObject.getSubContentObject(fileName);
+					if(fileContentObject==null){
+						return null;
+					}else{
+						BinaryContent documentContent=coh.getBinaryContent(currentFolderContentObject, fileName);	
+						documentContent.removeContentTags(documentContent.getContentTags());
+						String[] newTagValues=documentTagOperationVO.getTagValues();
+						return documentContent.addContentTags(newTagValues);
+					}						
+				}else{
+					return null;
+				}				
+			}else{
+				return null;				
+			}		
+		} catch (ContentReposityException e) {				
+			e.printStackTrace();
+		}finally{
+			if(activityContentSpace!=null){
+				activityContentSpace.closeContentSpace();
+			}				
+		}			
+		return null;	
+	}
 	
 	@DELETE
 	@Path("/deletePerviewFile/{fileName}")

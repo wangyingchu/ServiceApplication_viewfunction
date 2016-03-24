@@ -11,6 +11,7 @@ public class DocumentTagOperationVO {
 	private ActivityTypeFileVO activityTypeFileInfo;
 	private ApplicationSpaceFileVO applicationSpaceFileInfo;
 	private RoleFileVO roleFileInfo;
+	private String[] tagValues;
 	public String getActivitySpaceName() {
 		return activitySpaceName;
 	}
@@ -52,5 +53,11 @@ public class DocumentTagOperationVO {
 	}
 	public void setRoleFileInfo(RoleFileVO roleFileInfo) {
 		this.roleFileInfo = roleFileInfo;
+	}
+	public String[] getTagValues() {
+		return tagValues;
+	}
+	public void setTagValues(String[] tagValues) {
+		this.tagValues = tagValues;
 	}
 }
