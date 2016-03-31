@@ -789,10 +789,12 @@ public class ActivityManagementService {
 			if(participantRelatedRoles!=null){
 				for(Role currentRole:participantRelatedRoles){
 					RoleQueue[] currentRoleQueues=currentRole.getRelatedRoleQueues();
-					for(RoleQueue currentRoleQueue:currentRoleQueues){
-						RoleQueueVO currentRoleQueueVO=buildRoleQueueVO(currentRoleQueue,true);
-						roleQueueVOs.add(currentRoleQueueVO);					
-					}				
+					if(currentRoleQueues!=null){
+						for(RoleQueue currentRoleQueue:currentRoleQueues){
+							RoleQueueVO currentRoleQueueVO=buildRoleQueueVO(currentRoleQueue,true);
+							roleQueueVOs.add(currentRoleQueueVO);					
+						}
+					}
 				}			
 			}			
 		} catch (ActivityEngineRuntimeException e) {			

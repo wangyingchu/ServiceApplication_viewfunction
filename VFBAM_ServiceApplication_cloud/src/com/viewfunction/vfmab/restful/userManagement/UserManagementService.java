@@ -220,20 +220,22 @@ public class UserManagementService {
 			e.printStackTrace();
 		}							
 		ParticipantDetailInfoVOsList participantDetailInfoVOsList=ParticipantOperationServiceRESTClient.getUsersDetailInfo(participantDetailInfosQueryVO);
-		List<ParticipantDetailInfoVO> fullUserParticipantDetailInfoList= participantDetailInfoVOsList.getParticipantDetailInfoVOsList();		
-		for(ParticipantDetailInfoVO currentParticipantDetailInfoVO:fullUserParticipantDetailInfoList){
-			String participantId=currentParticipantDetailInfoVO.getUserId();			
-			Set<String> roleNameKeys = roleParticipantsIdListMap.keySet( );
-		    	if(roleNameKeys != null){
-		    		for(String currentRoleName : roleNameKeys){ 
-		    			List<String> roleParticipantsIdList=roleParticipantsIdListMap.get(currentRoleName);
-		    			if(roleParticipantsIdList.contains(participantId)){
-		    				RoleParticipantsVO currentRoleParticipantsVO=roleParticipantsMap.get(currentRoleName);
-		    				currentRoleParticipantsVO.getRoleParticipants().getParticipantDetailInfoVOsList().add(currentParticipantDetailInfoVO);		    			   
-		    			}			    		   
-		    		}		    	   
-		    	}
-		}		
+		List<ParticipantDetailInfoVO> fullUserParticipantDetailInfoList= participantDetailInfoVOsList.getParticipantDetailInfoVOsList();
+		if(fullUserParticipantDetailInfoList!=null){
+			for(ParticipantDetailInfoVO currentParticipantDetailInfoVO:fullUserParticipantDetailInfoList){
+				String participantId=currentParticipantDetailInfoVO.getUserId();			
+				Set<String> roleNameKeys = roleParticipantsIdListMap.keySet( );
+			    	if(roleNameKeys != null){
+			    		for(String currentRoleName : roleNameKeys){ 
+			    			List<String> roleParticipantsIdList=roleParticipantsIdListMap.get(currentRoleName);
+			    			if(roleParticipantsIdList.contains(participantId)){
+			    				RoleParticipantsVO currentRoleParticipantsVO=roleParticipantsMap.get(currentRoleName);
+			    				currentRoleParticipantsVO.getRoleParticipants().getParticipantDetailInfoVOsList().add(currentParticipantDetailInfoVO);		    			   
+			    			}			    		   
+			    		}		    	   
+			    	}
+			}		
+		}
 		List<RoleParticipantsVO> roleParticipantsList = new ArrayList<RoleParticipantsVO>(roleParticipantsMap.values());		
 		return roleParticipantsList;		
 	}		
