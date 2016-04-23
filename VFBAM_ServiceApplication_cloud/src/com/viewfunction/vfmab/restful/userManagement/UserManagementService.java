@@ -151,6 +151,37 @@ public class UserManagementService {
 	}
 	
 	@GET
+    @Path("/participantsDetailOfRole/{applicationSpaceName}/{roleName}")
+	@Produces("application/json")
+	public List<ParticipantDetailInfoVO> getParticipantsDetailInfoOfRole(@PathParam("applicationSpaceName")String applicationSpaceName,@PathParam("roleName")String roleName) {
+		ArrayList<ParticipantDetailInfoVO> userDetailInfoVOList=new ArrayList<ParticipantDetailInfoVO>();
+		String activitySpaceName=applicationSpaceName;			
+		ActivitySpace activitySpace=ActivityComponentFactory.getActivitySpace(activitySpaceName);		
+		try {
+			Role targetRole=activitySpace.getRole(roleName);			
+			Participant[] participantList=targetRole.getParticipants();			
+			List<String> participantsIdList=new ArrayList<String>();
+			ParticipantDetailInfosQueryVO participantDetailInfosQueryVO=new ParticipantDetailInfosQueryVO();					
+			participantDetailInfosQueryVO.setParticipantsUserUidList(participantsIdList);		
+			participantDetailInfosQueryVO.setParticipantScope(applicationSpaceName);			
+			for(Participant currentParticipant:participantList){				
+				participantsIdList.add(currentParticipant.getParticipantName());
+			}				
+			//get users' detail info from ParticipantOperationService
+			ParticipantDetailInfoVOsList participantDetailInfoVOsList=ParticipantOperationServiceRESTClient.getUsersDetailInfo(participantDetailInfosQueryVO);
+			List<ParticipantDetailInfoVO> participantDetailInfoVOsResultList=participantDetailInfoVOsList.getParticipantDetailInfoVOsList();
+			for(ParticipantDetailInfoVO participantDetailInfoVO:participantDetailInfoVOsResultList){
+				if(participantDetailInfoVO!=null){
+					userDetailInfoVOList.add(participantDetailInfoVO);
+				}							
+			}	
+		} catch (ActivityEngineRuntimeException e) {			
+			e.printStackTrace();
+		}
+		return userDetailInfoVOList;
+	}
+	
+	@GET
     @Path("/colleaguesOfUser/{applicationSpaceName}/{participantName}")
 	@Produces("application/json")
 	public ParticipantDetailInfoVOsList getUsersColleagueInfo(@PathParam("applicationSpaceName")String applicationSpaceName,@PathParam("participantName")String participantName) {
