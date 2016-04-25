@@ -2161,6 +2161,10 @@ public class ActivityManagementService {
 			roleQueueVO.setRelatedRoles(roleVOs);
 		}		
 		
+		
+		HashMap<String, BusinessActivityDefinition> businessActivityDefinitionMap=new HashMap<String,BusinessActivityDefinition>();
+		
+		
 		DataFieldDefinition[] exposedDataFields = currentRoleQueue.getExposedDataFields();
 		List<ActivityDataDefinitionVO> exposedDataFieldVOs=new ArrayList<ActivityDataDefinitionVO>();
 		if(exposedDataFields!=null){			
@@ -2179,7 +2183,6 @@ public class ActivityManagementService {
 			}			
 		}					
 		roleQueueVO.setExposedDataFields(exposedDataFieldVOs);
-		
 		List<ActivityStep> containedActivySteps=currentRoleQueue.fetchActivitySteps();
 		List<ActivityStepVO> containedActivyStepVOs=new ArrayList<ActivityStepVO>();
 		for(ActivityStep currentActivityStep:containedActivySteps){
@@ -2193,9 +2196,7 @@ public class ActivityManagementService {
 			currentActivityStepVO.setStepAssignee(currentActivityStep.getStepAssignee());				
 			currentActivityStepVO.setStepOwner(currentActivityStep.getStepOwner());					
 			currentActivityStepVO.setHasChildActivityStep(currentActivityStep.hasChildActivityStep());
-			currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());			
-			String[] stepResponse=currentActivityStep.getBusinessActivity().getActivityDefinition().getStepDecisionPointChoiseList(currentActivityStep.getActivityStepDefinitionKey());
-			currentActivityStepVO.setStepResponse(stepResponse);			
+			currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());	
 			if(currentActivityStep.getDueDate()!=null){
 				currentActivityStepVO.setFinishTime(currentActivityStep.getDueDate().getTime());
 				currentActivityStepVO.setDueStatus(getTaskDueStatus(currentActivityStep.getDueDate().getTime()));
@@ -2203,7 +2204,6 @@ public class ActivityManagementService {
 				currentActivityStepVO.setFinishTime(0);
 				currentActivityStepVO.setDueStatus(TASK_DUESTATUS_NODEU);
 			}
-			
 			Role relatedRole=currentActivityStep.getRelatedRole();
 			RoleVO relatedRoleVO=new RoleVO();
 			relatedRoleVO.setActivitySpaceName(relatedRole.getActivitySpaceName());
@@ -2211,6 +2211,14 @@ public class ActivityManagementService {
 			relatedRoleVO.setDisplayName(relatedRole.getDisplayName());
 			relatedRoleVO.setRoleName(relatedRole.getRoleName());				
 			currentActivityStepVO.setRelatedRole(relatedRoleVO);
+			
+			BusinessActivityDefinition targetActivityDefinition=businessActivityDefinitionMap.get(currentActivityStep.getActivityType());
+			if(targetActivityDefinition==null){
+				targetActivityDefinition=currentActivityStep.getBusinessActivity().getActivityDefinition();
+				businessActivityDefinitionMap.put(currentActivityStep.getActivityType(), targetActivityDefinition);
+			}
+			String[] stepResponse=targetActivityDefinition.getStepDecisionPointChoiseList(currentActivityStep.getActivityStepDefinitionKey());
+			currentActivityStepVO.setStepResponse(stepResponse);	
 			
 			ActivityData[] currentActivityData=currentActivityStep.getActivityStepData();				
 			ActivityDataFieldValueVOList activityDataFieldValueVOList=new ActivityDataFieldValueVOList();
@@ -2222,10 +2230,14 @@ public class ActivityManagementService {
 					activityDataFieldValueVOs.add(activityDataFieldValueVO);						
 				}
 			}			
-			currentActivityStepVO.setActivityDataFieldValueList(activityDataFieldValueVOList);				
-			containedActivyStepVOs.add(currentActivityStepVO);
-		}			
-		roleQueueVO.setActivitySteps(containedActivyStepVOs);				
+			currentActivityStepVO.setActivityDataFieldValueList(activityDataFieldValueVOList);	
+			containedActivyStepVOs.add(currentActivityStepVO);	
+		}
+		roleQueueVO.setActivitySteps(containedActivyStepVOs);	
+		
+		businessActivityDefinitionMap.clear();
+		businessActivityDefinitionMap=null;
+		
 		return roleQueueVO;		
 	}	
 	
