@@ -157,7 +157,8 @@ public class ActivityManagementService {
 		ActivitySpace activitySpace=ActivityComponentFactory.getActivitySpace(activitySpaceName);		
 		try {
 			Participant userParticipant=activitySpace.getParticipant(participantName);				
-			List<ParticipantTask> participantTasksList=userParticipant.fetchParticipantTasks();			
+			List<ParticipantTask> participantTasksList=userParticipant.fetchParticipantTasks();	
+			//HashMap<String, BusinessActivityDefinition> businessActivityDefinitionMap=new HashMap<String,BusinessActivityDefinition>();
 			for(ParticipantTask participantTask:participantTasksList){				
 				ParticipantTaskVO currentParticipantTaskVO=new ParticipantTaskVO();
 				participantTaskVOsList.add(currentParticipantTaskVO);				
@@ -190,7 +191,18 @@ public class ActivityManagementService {
 				
 				currentActivityStepVO.setStepAssignee(currentActivityStep.getStepAssignee());
 				currentActivityStepVO.setStepDescription(currentActivityStep.getStepDescription());
-				currentActivityStepVO.setStepOwner(currentActivityStep.getStepOwner());					
+				currentActivityStepVO.setStepOwner(currentActivityStep.getStepOwner());			
+				
+				
+				/*
+				BusinessActivityDefinition targetActivityDefinition=businessActivityDefinitionMap.get(currentActivityStep.getActivityType());
+				if(targetActivityDefinition==null){
+					targetActivityDefinition=currentActivityStep.getBusinessActivity().getActivityDefinition();
+					businessActivityDefinitionMap.put(currentActivityStep.getActivityType(), targetActivityDefinition);
+				}
+				String[] stepResponse=targetActivityDefinition.getStepDecisionPointChoiseList(currentActivityStep.getActivityStepDefinitionKey());
+				currentActivityStepVO.setStepResponse(stepResponse);
+				*/
 				String[] stepResponse=currentActivityStep.getBusinessActivity().getActivityDefinition().getStepDecisionPointChoiseList(currentActivityStep.getActivityStepDefinitionKey());
 				currentActivityStepVO.setStepResponse(stepResponse);
 				
@@ -2161,9 +2173,7 @@ public class ActivityManagementService {
 			roleQueueVO.setRelatedRoles(roleVOs);
 		}		
 		
-		
 		HashMap<String, BusinessActivityDefinition> businessActivityDefinitionMap=new HashMap<String,BusinessActivityDefinition>();
-		
 		
 		DataFieldDefinition[] exposedDataFields = currentRoleQueue.getExposedDataFields();
 		List<ActivityDataDefinitionVO> exposedDataFieldVOs=new ArrayList<ActivityDataDefinitionVO>();
@@ -2220,7 +2230,10 @@ public class ActivityManagementService {
 			String[] stepResponse=targetActivityDefinition.getStepDecisionPointChoiseList(currentActivityStep.getActivityStepDefinitionKey());
 			currentActivityStepVO.setStepResponse(stepResponse);	
 			
-			ActivityData[] currentActivityData=currentActivityStep.getActivityStepData();				
+			//ActivityData[] currentActivityData=currentActivityStep.getActivityStepData();
+			//use this method for better performance
+			DataFieldDefinition[] currentStepDataFieldDefinitionArray=targetActivityDefinition.getActivityStepsExposedDataField().get(currentActivityStep.getActivityStepDefinitionKey());
+			ActivityData[] currentActivityData=currentActivityStep.getBusinessActivity().getActivityData(currentStepDataFieldDefinitionArray);
 			ActivityDataFieldValueVOList activityDataFieldValueVOList=new ActivityDataFieldValueVOList();
 			List<ActivityDataFieldValueVO> activityDataFieldValueVOs=new ArrayList<ActivityDataFieldValueVO>();
 			activityDataFieldValueVOList.setActivityDataFieldValueList(activityDataFieldValueVOs);
