@@ -156,9 +156,10 @@ public class ActivityManagementService {
 		String activitySpaceName=applicationSpaceName;	
 		ActivitySpace activitySpace=ActivityComponentFactory.getActivitySpace(activitySpaceName);		
 		try {
-			Participant userParticipant=activitySpace.getParticipant(participantName);				
+			Participant userParticipant=activitySpace.getParticipant(participantName);	
 			List<ParticipantTask> participantTasksList=userParticipant.fetchParticipantTasks();	
-			//HashMap<String, BusinessActivityDefinition> businessActivityDefinitionMap=new HashMap<String,BusinessActivityDefinition>();
+			HashMap<String, BusinessActivityDefinition> businessActivityDefinitionMap=new HashMap<String,BusinessActivityDefinition>();
+			HashMap<String, Role> activityStepRelatedRoleMap=new HashMap<String,Role>();
 			for(ParticipantTask participantTask:participantTasksList){				
 				ParticipantTaskVO currentParticipantTaskVO=new ParticipantTaskVO();
 				participantTaskVOsList.add(currentParticipantTaskVO);				
@@ -192,9 +193,7 @@ public class ActivityManagementService {
 				currentActivityStepVO.setStepAssignee(currentActivityStep.getStepAssignee());
 				currentActivityStepVO.setStepDescription(currentActivityStep.getStepDescription());
 				currentActivityStepVO.setStepOwner(currentActivityStep.getStepOwner());			
-				
-				
-				/*
+			
 				BusinessActivityDefinition targetActivityDefinition=businessActivityDefinitionMap.get(currentActivityStep.getActivityType());
 				if(targetActivityDefinition==null){
 					targetActivityDefinition=currentActivityStep.getBusinessActivity().getActivityDefinition();
@@ -202,11 +201,11 @@ public class ActivityManagementService {
 				}
 				String[] stepResponse=targetActivityDefinition.getStepDecisionPointChoiseList(currentActivityStep.getActivityStepDefinitionKey());
 				currentActivityStepVO.setStepResponse(stepResponse);
-				*/
-				String[] stepResponse=currentActivityStep.getBusinessActivity().getActivityDefinition().getStepDecisionPointChoiseList(currentActivityStep.getActivityStepDefinitionKey());
-				currentActivityStepVO.setStepResponse(stepResponse);
 				
-				ActivityData[] stepDataArray=currentActivityStep.getActivityStepData();	
+				//ActivityData[] stepDataArray=currentActivityStep.getActivityStepData();	
+				//use this method for better performance
+				DataFieldDefinition[] currentStepDataFieldDefinitionArray=targetActivityDefinition.getActivityStepsExposedDataField().get(currentActivityStep.getActivityStepDefinitionKey());
+				ActivityData[] stepDataArray=currentActivityStep.getBusinessActivity().getActivityData(currentStepDataFieldDefinitionArray);
 				ActivityDataFieldValueVOList activityDataFieldValueVOList=new ActivityDataFieldValueVOList();
 				List<ActivityDataFieldValueVO> activityDataFieldValueList=new ArrayList<ActivityDataFieldValueVO>();
 				activityDataFieldValueVOList.setActivityDataFieldValueList(activityDataFieldValueList);
@@ -218,7 +217,13 @@ public class ActivityManagementService {
 					}	
 				}
 				
-				Role relatedRole=currentActivityStep.getRelatedRole();
+				Role relatedRole=activityStepRelatedRoleMap.get(currentActivityStep.getActivityStepDefinitionKey());
+				if(relatedRole==null){
+					 relatedRole=currentActivityStep.getRelatedRole();
+					 if(relatedRole!=null){
+						 activityStepRelatedRoleMap.put(currentActivityStep.getActivityStepDefinitionKey(), relatedRole);
+					 }
+				}
 				if(relatedRole!=null){
 					RoleVO currentRoleVO=new RoleVO();					
 					currentActivityStepVO.setRelatedRole(currentRoleVO);
@@ -239,10 +244,14 @@ public class ActivityManagementService {
 					currentParticipantTaskVO.setDueStatus(TASK_DUESTATUS_NODEU);
 				}
 				
-				currentParticipantTaskVO.setRoleName(participantTask.getRoleName());
+				//currentParticipantTaskVO.setRoleName(participantTask.getRoleName());
+				//for better performance
+				if(relatedRole!=null){
+					currentParticipantTaskVO.setRoleName(relatedRole.getRoleName());
+				}
 				currentParticipantTaskVO.setStepAssignee(participantTask.getStepAssignee());
 				currentParticipantTaskVO.setStepDescription(participantTask.getStepDescription());
-				currentParticipantTaskVO.setStepOwner(participantTask.getStepOwner());				
+				currentParticipantTaskVO.setStepOwner(participantTask.getStepOwner());	
 			}			
 		} catch (ActivityEngineRuntimeException e) {			
 			e.printStackTrace();
@@ -252,7 +261,7 @@ public class ActivityManagementService {
 			e.printStackTrace();
 		} catch (ActivityEngineDataException e) {			
 			e.printStackTrace();
-		}		
+		}
 		return participantTaskVOList;
 	}	
 	
