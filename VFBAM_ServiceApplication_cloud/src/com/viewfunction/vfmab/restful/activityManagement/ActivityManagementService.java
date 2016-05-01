@@ -31,6 +31,8 @@ import com.viewfunction.activityEngine.exception.ActivityEngineActivityException
 import com.viewfunction.activityEngine.exception.ActivityEngineDataException;
 import com.viewfunction.activityEngine.exception.ActivityEngineProcessException;
 import com.viewfunction.activityEngine.exception.ActivityEngineRuntimeException;
+import com.viewfunction.activityEngine.helper.BatchOperationHelper;
+import com.viewfunction.activityEngine.helperImpl.CCR_CPRBatchOperationHelperImpl;
 import com.viewfunction.activityEngine.security.Participant;
 import com.viewfunction.activityEngine.security.Role;
 import com.viewfunction.activityEngine.util.factory.ActivityComponentFactory;
@@ -2182,8 +2184,6 @@ public class ActivityManagementService {
 			roleQueueVO.setRelatedRoles(roleVOs);
 		}		
 		
-		HashMap<String, BusinessActivityDefinition> businessActivityDefinitionMap=new HashMap<String,BusinessActivityDefinition>();
-		
 		DataFieldDefinition[] exposedDataFields = currentRoleQueue.getExposedDataFields();
 		List<ActivityDataDefinitionVO> exposedDataFieldVOs=new ArrayList<ActivityDataDefinitionVO>();
 		if(exposedDataFields!=null){			
@@ -2203,6 +2203,8 @@ public class ActivityManagementService {
 		}					
 		roleQueueVO.setExposedDataFields(exposedDataFieldVOs);
 		List<ActivityStep> containedActivySteps=currentRoleQueue.fetchActivitySteps();
+		
+		HashMap<String, BusinessActivityDefinition> businessActivityDefinitionMap=new HashMap<String,BusinessActivityDefinition>();
 		List<ActivityStepVO> containedActivyStepVOs=new ArrayList<ActivityStepVO>();
 		for(ActivityStep currentActivityStep:containedActivySteps){
 			ActivityStepVO currentActivityStepVO=new ActivityStepVO();
@@ -2238,28 +2240,27 @@ public class ActivityManagementService {
 			}
 			String[] stepResponse=targetActivityDefinition.getStepDecisionPointChoiseList(currentActivityStep.getActivityStepDefinitionKey());
 			currentActivityStepVO.setStepResponse(stepResponse);	
-			
-			//ActivityData[] currentActivityData=currentActivityStep.getActivityStepData();
-			//use this method for better performance
-			DataFieldDefinition[] currentStepDataFieldDefinitionArray=targetActivityDefinition.getActivityStepsExposedDataField().get(currentActivityStep.getActivityStepDefinitionKey());
-			ActivityData[] currentActivityData=currentActivityStep.getBusinessActivity().getActivityData(currentStepDataFieldDefinitionArray);
+			containedActivyStepVOs.add(currentActivityStepVO);	
+		}
+		//use this method for better performance
+		BatchOperationHelper boh=ActivityComponentFactory.getBatchOperationHelper();
+		List<ActivityData[]> adal=boh.batchQueryActivityStepsData(currentRoleQueue.getActivitySpaceName(),containedActivySteps, businessActivityDefinitionMap);
+		for(int i=0;i<adal.size();i++){
+			ActivityData[] currentActivityDataArray=adal.get(i);
 			ActivityDataFieldValueVOList activityDataFieldValueVOList=new ActivityDataFieldValueVOList();
 			List<ActivityDataFieldValueVO> activityDataFieldValueVOs=new ArrayList<ActivityDataFieldValueVO>();
 			activityDataFieldValueVOList.setActivityDataFieldValueList(activityDataFieldValueVOs);
-			if(currentActivityData!=null){
-				for(ActivityData activityData:currentActivityData){							
+			if(currentActivityDataArray!=null){
+				for(ActivityData activityData:currentActivityDataArray){							
 					ActivityDataFieldValueVO activityDataFieldValueVO=buildActivityDataFieldValueVO(activityData);
 					activityDataFieldValueVOs.add(activityDataFieldValueVO);						
 				}
 			}			
-			currentActivityStepVO.setActivityDataFieldValueList(activityDataFieldValueVOList);	
-			containedActivyStepVOs.add(currentActivityStepVO);	
+			containedActivyStepVOs.get(i).setActivityDataFieldValueList(activityDataFieldValueVOList);
 		}
 		roleQueueVO.setActivitySteps(containedActivyStepVOs);	
-		
 		businessActivityDefinitionMap.clear();
 		businessActivityDefinitionMap=null;
-		
 		return roleQueueVO;		
 	}	
 	
