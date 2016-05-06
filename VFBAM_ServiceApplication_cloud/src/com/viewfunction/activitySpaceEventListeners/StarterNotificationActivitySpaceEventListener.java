@@ -151,4 +151,9 @@ public class StarterNotificationActivitySpaceEventListener extends ActivitySpace
         	return activityDuration;
         }
 	}
+
+	@Override
+	public void handelListenerLogicError(ActivitySpaceEventContext arg0, Exception arg1) {
+		// TODO Auto-generated method stub
+	}
 }

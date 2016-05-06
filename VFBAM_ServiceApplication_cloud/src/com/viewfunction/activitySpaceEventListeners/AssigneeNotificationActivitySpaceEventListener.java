@@ -246,4 +246,9 @@ public class AssigneeNotificationActivitySpaceEventListener extends ActivitySpac
 		}
 		return false;
 	}
+
+	@Override
+	public void handelListenerLogicError(ActivitySpaceEventContext arg0, Exception arg1) {
+		// TODO Auto-generated method stub
+	}
 }
