@@ -1156,7 +1156,42 @@ public class UserManagementService {
 			booleanOperationResultVO.setOperationResult(false);
 		}		
 		return booleanOperationResultVO;
-	}		
+	}	
+	
+	@POST
+    @Path("/syncNewParticipant/{applicationSpaceName}")	
+	@Produces("application/xml")
+	public BooleanOperationResultVO syncAddNewParticipant(@PathParam("applicationSpaceName")String applicationSpaceName,UserBasicInfoVO newUserBasicInfoVO){
+		BooleanOperationResultVO booleanOperationResultVO=new BooleanOperationResultVO();
+		booleanOperationResultVO.setTiemStamp(new Date().getTime());
+		if(newUserBasicInfoVO.getUserId()==null){
+			booleanOperationResultVO.setOperationResult(false);
+			return booleanOperationResultVO;
+		}
+		String activitySpaceName=applicationSpaceName;
+		ActivitySpace activitySpace=ActivityComponentFactory.getActivitySpace(activitySpaceName);		
+		try {
+			Participant targetParticipant=activitySpace.getParticipant(newUserBasicInfoVO.getUserId());
+			if(targetParticipant!=null){
+				booleanOperationResultVO.setOperationResult(false);
+			}else{
+				String targetParticipantType=Participant.PARTICIPANT_TYPE_USER;
+				if(newUserBasicInfoVO.getUserType()!=null&&newUserBasicInfoVO.getUserType().equals(Participant.PARTICIPANT_TYPE_GROUP)){
+					targetParticipantType=Participant.PARTICIPANT_TYPE_GROUP;
+				}
+				targetParticipant=ActivityComponentFactory.createParticipant(newUserBasicInfoVO.getUserId(),targetParticipantType, activitySpaceName);
+				if(newUserBasicInfoVO.getUserDisplayName()!=null){
+					targetParticipant.setDisplayName(newUserBasicInfoVO.getUserDisplayName());
+				}
+				boolean addParticipantResult=activitySpace.addParticipant(targetParticipant);
+				booleanOperationResultVO.setOperationResult(addParticipantResult);
+			}
+		} catch (ActivityEngineRuntimeException e) {	
+			booleanOperationResultVO.setOperationResult(false);
+			e.printStackTrace();
+		}		
+		return booleanOperationResultVO;
+	}
 	
 	private static CustomStructureVO loadCustomStructure(CustomStructure targetCustomStructure) throws ActivityEngineRuntimeException, ActivityEngineDataException{
 		CustomStructureVO targetCustomStructureVO=new CustomStructureVO();				
