@@ -20,6 +20,7 @@ import javax.ws.rs.Produces;
 import com.viewfunction.activityEngine.activityBureau.ActivitySpace;
 import com.viewfunction.activityEngine.activityView.common.CustomAttribute;
 import com.viewfunction.activityEngine.activityView.common.CustomStructure;
+import com.viewfunction.activityEngine.exception.ActivityEngineActivityException;
 import com.viewfunction.activityEngine.exception.ActivityEngineDataException;
 import com.viewfunction.activityEngine.exception.ActivityEngineException;
 import com.viewfunction.activityEngine.exception.ActivityEngineRuntimeException;
@@ -1191,6 +1192,25 @@ public class UserManagementService {
 			e.printStackTrace();
 		}		
 		return booleanOperationResultVO;
+	}
+	
+	@GET
+	@Path("/availableApplicationFeatures/{applicationSpaceName}")
+	@Produces("application/json")
+	public static String[] getApplicationSpaceExtendFeatureCategories(@PathParam("applicationSpaceName")String applicationSpaceName){
+		String activitySpaceName=applicationSpaceName;
+		ActivitySpace activitySpace=ActivityComponentFactory.getActivitySpace(activitySpaceName);		
+		try {
+			String[] currentSpaceExtendFeatureCategories=activitySpace.getActivitySpaceExtendFeatureCategories();
+			if(currentSpaceExtendFeatureCategories!=null){
+				return currentSpaceExtendFeatureCategories;
+			}
+		} catch (ActivityEngineRuntimeException e) {	
+			e.printStackTrace();
+		} catch (ActivityEngineActivityException e) {
+			e.printStackTrace();
+		}		
+		return new String[0];
 	}
 	
 	private static CustomStructureVO loadCustomStructure(CustomStructure targetCustomStructure) throws ActivityEngineRuntimeException, ActivityEngineDataException{
