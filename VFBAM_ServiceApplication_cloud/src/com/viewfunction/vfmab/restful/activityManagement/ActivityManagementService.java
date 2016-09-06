@@ -1432,7 +1432,8 @@ public class ActivityManagementService {
 						if(targetActivityStepVO!=null){
 							targetActivityStepVO.setStepAssigneeParticipant(stepAssigneeParticipantDetailInfoVOList.get(i));
 						}					
-					}			
+					}	
+					stepAssigneeUserList.clear();
 				}
 				
 				if(stepOwnerUserList.size()>0){
@@ -1448,7 +1449,8 @@ public class ActivityManagementService {
 						if(targetActivityStepVO!=null){
 							targetActivityStepVO.setStepOwnerParticipant(stepOwnerParticipantDetailInfoVOList.get(i));
 						}					
-					}									
+					}			
+					stepOwnerUserList.clear();
 				}				
 					
 				List<String> nextSteps=currentBusinessActivity.getActivityProcessObject().getNextProcessSteps();
@@ -1494,7 +1496,7 @@ public class ActivityManagementService {
 				if(finishedActivityStepAssigneeUserList.size()>0){
 					ParticipantDetailInfosQueryVO finishedStepAssigneeParticipantDetailInfosQueryVO=new ParticipantDetailInfosQueryVO();						
 					finishedStepAssigneeParticipantDetailInfosQueryVO.setParticipantsUserUidList(finishedActivityStepAssigneeUserList);
-					finishedStepAssigneeParticipantDetailInfosQueryVO.setParticipantScope(activitySpaceName);				
+					finishedStepAssigneeParticipantDetailInfosQueryVO.setParticipantScope(activitySpaceName);	
 					ParticipantDetailInfoVOsList finishedStepAssigneeParticipantDetailInfoVOsList=
 							ParticipantOperationServiceRESTClient.getUsersDetailInfo(finishedStepAssigneeParticipantDetailInfosQueryVO);			
 					List<ParticipantDetailInfoVO> finishedStepAssigneeParticipantDetailInfoVOList=finishedStepAssigneeParticipantDetailInfoVOsList.getParticipantDetailInfoVOsList();				
@@ -1504,7 +1506,8 @@ public class ActivityManagementService {
 						if(targetActivityStepVO!=null){
 							targetActivityStepVO.setStepAssigneeParticipant(finishedStepAssigneeParticipantDetailInfoVOList.get(i));
 						}					
-					}						
+					}	
+					finishedActivityStepAssigneeUserList.clear();
 				}
 				
 				if(finishedActivityStepOwnerUserList.size()>0){
@@ -1520,7 +1523,8 @@ public class ActivityManagementService {
 						if(targetActivityStepVO!=null){
 							targetActivityStepVO.setStepOwnerParticipant(finishedStepOwnerParticipantDetailInfoVOList.get(i));
 						}					
-					}						
+					}		
+					finishedActivityStepOwnerUserList.clear();
 				}				
 			}			
 			ParticipantDetailInfoVOsList participantDetailInfoVOsList=
