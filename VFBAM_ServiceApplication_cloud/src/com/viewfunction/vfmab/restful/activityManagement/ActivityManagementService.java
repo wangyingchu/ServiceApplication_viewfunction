@@ -32,7 +32,6 @@ import com.viewfunction.activityEngine.exception.ActivityEngineDataException;
 import com.viewfunction.activityEngine.exception.ActivityEngineProcessException;
 import com.viewfunction.activityEngine.exception.ActivityEngineRuntimeException;
 import com.viewfunction.activityEngine.helper.BatchOperationHelper;
-import com.viewfunction.activityEngine.helperImpl.CCR_CPRBatchOperationHelperImpl;
 import com.viewfunction.activityEngine.security.Participant;
 import com.viewfunction.activityEngine.security.Role;
 import com.viewfunction.activityEngine.util.factory.ActivityComponentFactory;
@@ -1071,8 +1070,7 @@ public class ActivityManagementService {
 	public List<ActivityTypeDefinitionVO> getActivityTypeDefinitions(ActivityOperatorVO activityOperatorVO){
 		List<ActivityTypeDefinitionVO> activityTypeDefinitionList=new ArrayList<ActivityTypeDefinitionVO>();
 		String activitySpaceName=activityOperatorVO.getActivitySpaceName();
-		ActivitySpace activitySpace=ActivityComponentFactory.getActivitySpace(activitySpaceName);
-		String participantId=activityOperatorVO.getOperatorId();		
+		ActivitySpace activitySpace=ActivityComponentFactory.getActivitySpace(activitySpaceName);			
 		try {
 			BusinessActivityDefinition[] activityTypeDefinitionArray=activitySpace.getBusinessActivityDefinitions();
 			for(BusinessActivityDefinition currentBusinessActivityDefinition:activityTypeDefinitionArray){				
