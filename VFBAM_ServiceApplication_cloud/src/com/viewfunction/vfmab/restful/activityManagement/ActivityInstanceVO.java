@@ -19,6 +19,8 @@ public class ActivityInstanceVO {
 	private List<ActivityStepVO> currentActivitySteps;	
 	private List<String> nextActivitySteps;	
 	private List<ActivityStepVO> finishedActivitySteps;
+	private boolean isSuspended;
+	
 	public ActivityTypeDefinitionVO getActivityTypeDefinition() {
 		return activityTypeDefinition;
 	}
@@ -85,5 +87,11 @@ public class ActivityInstanceVO {
 	public void setActivityStartUserParticipant(
 			ParticipantDetailInfoVO activityStartUserParticipant) {
 		this.activityStartUserParticipant = activityStartUserParticipant;
+	}
+	public boolean getIsSuspended() {
+		return isSuspended;
+	}
+	public void setIsSuspended(boolean isSuspendedActivity) {
+		this.isSuspended = isSuspendedActivity;
 	}
 }

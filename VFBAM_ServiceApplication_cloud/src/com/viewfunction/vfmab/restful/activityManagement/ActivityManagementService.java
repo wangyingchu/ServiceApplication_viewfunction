@@ -80,7 +80,6 @@ public class ActivityManagementService {
 			for(ParticipantTask participantTask:participantTasksList){				
 				ParticipantTaskVO currentParticipantTaskVO=new ParticipantTaskVO();
 				participantTaskVOsList.add(currentParticipantTaskVO);				
-				
 				ActivityStepVO currentActivityStepVO=new ActivityStepVO();
 				ActivityStep currentActivityStep=participantTask.getActivityStep();				
 				currentActivityStepVO.setActivityId(currentActivityStep.getActivityId());
@@ -89,8 +88,10 @@ public class ActivityManagementService {
 				currentActivityStepVO.setActivityType(currentActivityStep.getActivityType());
 				currentActivityStepVO.setCreateTime(currentActivityStep.getCreateTime().getTime());
 				currentActivityStepVO.setHasChildActivityStep(currentActivityStep.hasChildActivityStep());
-				currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());				
-				
+				currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());
+				currentActivityStepVO.setStepPriority(currentActivityStep.getActivityStepPriority());
+				currentActivityStepVO.setIsDelegatedStep(currentActivityStep.isDelegatedActivityStep());
+				currentActivityStepVO.setIsSuspendedStep(currentActivityStep.isSuspendedActivityStep());				
 				if(currentActivityStep.getFinishTime()!=null){
 					currentActivityStepVO.setFinishTime(currentActivityStep.getFinishTime().getTime());
 				}else{
@@ -172,7 +173,10 @@ public class ActivityManagementService {
 				currentActivityStepVO.setActivityType(currentActivityStep.getActivityType());
 				currentActivityStepVO.setCreateTime(currentActivityStep.getCreateTime().getTime());
 				currentActivityStepVO.setHasChildActivityStep(currentActivityStep.hasChildActivityStep());
-				currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());				
+				currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());
+				currentActivityStepVO.setStepPriority(currentActivityStep.getActivityStepPriority());
+				currentActivityStepVO.setIsDelegatedStep(currentActivityStep.isDelegatedActivityStep());
+				currentActivityStepVO.setIsSuspendedStep(currentActivityStep.isSuspendedActivityStep());				
 				if(currentActivityStep.hasParentActivityStep()){
 					ActivityStep parentActivityStep=currentActivityStep.getParentActivityStep();
 					if(parentActivityStep!=null){
@@ -289,7 +293,10 @@ public class ActivityManagementService {
 					currentActivityStepVO.setActivityType(currentActivityStep.getActivityType());
 					currentActivityStepVO.setCreateTime(currentActivityStep.getCreateTime().getTime());
 					currentActivityStepVO.setHasChildActivityStep(currentActivityStep.hasChildActivityStep());
-					currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());				
+					currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());
+					currentActivityStepVO.setStepPriority(currentActivityStep.getActivityStepPriority());
+					currentActivityStepVO.setIsDelegatedStep(currentActivityStep.isDelegatedActivityStep());
+					currentActivityStepVO.setIsSuspendedStep(currentActivityStep.isSuspendedActivityStep());
 					if(currentActivityStep.hasParentActivityStep()){
 						ActivityStep parentActivityStep=currentActivityStep.getParentActivityStep();
 						if(parentActivityStep!=null){
@@ -439,7 +446,11 @@ public class ActivityManagementService {
 				currentActivityStepVO.setCreateTime(currentActivityStep.getCreateTime().getTime());
 				currentActivityStepVO.setStepDescription(currentActivityStep.getStepDescription());					
 				currentActivityStepVO.setHasChildActivityStep(false);
-				currentActivityStepVO.setHasParentActivityStep(true);				
+				currentActivityStepVO.setHasParentActivityStep(true);
+				//child step uses parent step's priority value
+				currentActivityStepVO.setStepPriority(currentactivityStep.getActivityStepPriority());
+				currentActivityStepVO.setIsDelegatedStep(currentactivityStep.isDelegatedActivityStep());
+				currentActivityStepVO.setIsSuspendedStep(currentactivityStep.isSuspendedActivityStep());
 				currentActivityStepVO.setParentActivityStepName(createChildTaskVO.getActivityStepName());
 				if(currentActivityStep.getFinishTime()!=null){
 					currentActivityStepVO.setFinishTime(currentActivityStep.getFinishTime().getTime());
@@ -555,6 +566,10 @@ public class ActivityManagementService {
 				currentActivityStepVO.setHasChildActivityStep(false);
 				currentActivityStepVO.setHasParentActivityStep(true);				
 				currentActivityStepVO.setParentActivityStepName(activityStepOperationVO.getActivityStepName());
+				//child step uses parent step's priority value
+				currentActivityStepVO.setStepPriority(currentactivityStep.getActivityStepPriority());
+				currentActivityStepVO.setIsDelegatedStep(currentactivityStep.isDelegatedActivityStep());
+				currentActivityStepVO.setIsSuspendedStep(currentactivityStep.isSuspendedActivityStep());
 				if(currentActivityStep.getFinishTime()!=null){
 					currentActivityStepVO.setFinishTime(currentActivityStep.getFinishTime().getTime());
 				}else{
@@ -718,6 +733,9 @@ public class ActivityManagementService {
 					currentActivityStepVO.setStepOwner(currentActivityStep.getStepOwner());	
 					currentActivityStepVO.setHasChildActivityStep(currentActivityStep.hasChildActivityStep());
 					currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());
+					currentActivityStepVO.setStepPriority(currentActivityStep.getActivityStepPriority());
+					currentActivityStepVO.setIsDelegatedStep(currentActivityStep.isDelegatedActivityStep());
+					currentActivityStepVO.setIsSuspendedStep(currentActivityStep.isSuspendedActivityStep());
 					if(currentActivityStep.getFinishTime()!=null){
 						currentActivityStepVO.setFinishTime(currentActivityStep.getFinishTime().getTime());
 					}else{
@@ -901,6 +919,9 @@ public class ActivityManagementService {
 				currentActivityStepVO.setStepOwner(currentActivityStep.getStepOwner());	
 				currentActivityStepVO.setHasChildActivityStep(currentActivityStep.hasChildActivityStep());
 				currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());
+				currentActivityStepVO.setStepPriority(currentActivityStep.getActivityStepPriority());
+				currentActivityStepVO.setIsDelegatedStep(currentActivityStep.isDelegatedActivityStep());
+				currentActivityStepVO.setIsSuspendedStep(currentActivityStep.isSuspendedActivityStep());
 				if(currentActivityStep.getFinishTime()!=null){
 					currentActivityStepVO.setFinishTime(currentActivityStep.getFinishTime().getTime());
 				}else{
@@ -1339,6 +1360,8 @@ public class ActivityManagementService {
 				currentActivityInstance.setActivityId(currentBusinessActivity.getActivityId());
 				currentActivityInstance.setIsFinished(currentBusinessActivity.isFinished());
 				currentActivityInstance.setActivityStartUserId(currentBusinessActivity.getActivityProcessObject().getProcessStartUserId());
+				currentActivityInstance.setIsSuspended(currentBusinessActivity.isSuspendedActivity());				
+				
 				userList.add(currentBusinessActivity.getActivityProcessObject().getProcessStartUserId());					
 				currentActivityInstance.setActivityStartTime(currentBusinessActivity.getActivityProcessObject().getProcessStartTime().getTime());
 				if(currentBusinessActivity.isFinished()){
@@ -1376,7 +1399,10 @@ public class ActivityManagementService {
 					currentActivityStepVO.setActivityType(currentActivityStep.getActivityType());
 					currentActivityStepVO.setCreateTime(currentActivityStep.getCreateTime().getTime());	
 					currentActivityStepVO.setHasChildActivityStep(currentActivityStep.hasChildActivityStep());
-					currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());					
+					currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());
+					currentActivityStepVO.setStepPriority(currentActivityStep.getActivityStepPriority());
+					currentActivityStepVO.setIsDelegatedStep(currentActivityStep.isDelegatedActivityStep());
+					currentActivityStepVO.setIsSuspendedStep(currentActivityStep.isSuspendedActivityStep());
 					if(currentActivityStep.getFinishTime()!=null){
 						currentActivityStepVO.setFinishTime(currentActivityStep.getFinishTime().getTime());
 					}else{
@@ -1466,8 +1492,7 @@ public class ActivityManagementService {
 					currentFinishedActivityStepVO.setActivityType(currentBusinessActivity.getActivityDefinition().getActivityType());
 					currentFinishedActivityStepVO.setCreateTime(currentHistoricProcessStep.getStartTime().getTime());					
 					currentFinishedActivityStepVO.setHasChildActivityStep(currentHistoricProcessStep.hasChildStep());
-					currentFinishedActivityStepVO.setHasParentActivityStep(currentHistoricProcessStep.hasParentStep());	
-					
+					currentFinishedActivityStepVO.setHasParentActivityStep(currentHistoricProcessStep.hasParentStep());					
 					if(currentHistoricProcessStep.getEndTime()!=null){
 						currentFinishedActivityStepVO.setFinishTime(currentHistoricProcessStep.getEndTime().getTime());								
 					}						
@@ -1566,7 +1591,8 @@ public class ActivityManagementService {
 			currentActivityInstance.setActivityId(targetBusinessActivity.getActivityId());
 			currentActivityInstance.setIsFinished(targetBusinessActivity.isFinished());
 			currentActivityInstance.setActivityStartUserId(targetBusinessActivity.getActivityProcessObject().getProcessStartUserId());			
-			userList.add(targetBusinessActivity.getActivityProcessObject().getProcessStartUserId());				
+			currentActivityInstance.setIsSuspended(targetBusinessActivity.isSuspendedActivity());
+			userList.add(targetBusinessActivity.getActivityProcessObject().getProcessStartUserId());			
 			ParticipantDetailInfoVOsList participantDetailInfoVOsList=
 					ParticipantOperationServiceRESTClient.getUsersDetailInfo(participantDetailInfosQueryVO);			
 			List<ParticipantDetailInfoVO> participantDetailInfoVOList=participantDetailInfoVOsList.getParticipantDetailInfoVOsList();
@@ -1621,7 +1647,10 @@ public class ActivityManagementService {
 				currentActivityStepVO.setActivityType(currentActivityStep.getActivityType());
 				currentActivityStepVO.setCreateTime(currentActivityStep.getCreateTime().getTime());	
 				currentActivityStepVO.setHasChildActivityStep(currentActivityStep.hasChildActivityStep());
-				currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());				
+				currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());
+				currentActivityStepVO.setStepPriority(currentActivityStep.getActivityStepPriority());
+				currentActivityStepVO.setIsDelegatedStep(currentActivityStep.isDelegatedActivityStep());
+				currentActivityStepVO.setIsSuspendedStep(currentActivityStep.isSuspendedActivityStep());								
 				if(currentActivityStep.getFinishTime()!=null){
 					currentActivityStepVO.setFinishTime(currentActivityStep.getFinishTime().getTime());
 				}else{
@@ -1800,7 +1829,10 @@ public class ActivityManagementService {
 				currentActivityStepVO.setCreateTime(currentActivityStep.getCreateTime().getTime());
 				currentActivityStepVO.setStepDescription(currentActivityStep.getStepDescription());		
 				currentActivityStepVO.setHasChildActivityStep(currentActivityStep.hasChildActivityStep());
-				currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());				
+				currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());	
+				currentActivityStepVO.setStepPriority(currentActivityStep.getActivityStepPriority());
+				currentActivityStepVO.setIsDelegatedStep(currentActivityStep.isDelegatedActivityStep());
+				currentActivityStepVO.setIsSuspendedStep(currentActivityStep.isSuspendedActivityStep());								
 				if(currentActivityStep.getFinishTime()!=null){
 					currentActivityStepVO.setFinishTime(currentActivityStep.getFinishTime().getTime());
 				}else{
@@ -2045,7 +2077,110 @@ public class ActivityManagementService {
 			e.printStackTrace();
 		}		
 		return activityInvolveInfoList;
-	}
+	}	
+	
+	@GET
+    @Path("/activityStepDetail/{applicationSpaceName}/{activityId}/{activityStepName}")
+	@Produces("application/json")
+	public ActivityStepVO getActivityStepDetailInfo(@PathParam("applicationSpaceName")String applicationSpaceName,@PathParam("activityId")String activityId,@PathParam("activityStepName")String activityStepName){
+		String activitySpaceName=applicationSpaceName;	
+		ActivitySpace activitySpace=ActivityComponentFactory.getActivitySpace(activitySpaceName);			
+		try {			
+			BusinessActivity targetBusinessActivity=activitySpace.getBusinessActivityByActivityId(activityId);	
+			if(targetBusinessActivity==null){
+				return null;
+			}			
+			ActivityStep currentActivityStep=targetBusinessActivity.getCurrentActivityStepByStepName(activityStepName);
+			if(currentActivityStep==null){
+				return null;
+			}				
+			ActivityStepVO currentActivityStepVO=new ActivityStepVO();	
+			currentActivityStepVO.setActivityId(currentActivityStep.getActivityId());
+			currentActivityStepVO.setActivityStepDefinitionKey(currentActivityStep.getActivityStepDefinitionKey());
+			currentActivityStepVO.setActivityStepName(currentActivityStep.getActivityStepName());
+			currentActivityStepVO.setActivityType(currentActivityStep.getActivityType());			
+			currentActivityStepVO.setCreateTime(currentActivityStep.getCreateTime().getTime());			
+			currentActivityStepVO.setStepDescription(currentActivityStep.getStepDescription());		
+			currentActivityStepVO.setHasChildActivityStep(currentActivityStep.hasChildActivityStep());
+			currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());	
+			currentActivityStepVO.setStepPriority(currentActivityStep.getActivityStepPriority());
+			currentActivityStepVO.setIsDelegatedStep(currentActivityStep.isDelegatedActivityStep());
+			currentActivityStepVO.setIsSuspendedStep(currentActivityStep.isSuspendedActivityStep());								
+			if(currentActivityStep.getFinishTime()!=null){
+				currentActivityStepVO.setFinishTime(currentActivityStep.getFinishTime().getTime());
+			}else{
+				currentActivityStepVO.setFinishTime(0);
+			}				
+			if(currentActivityStep.getDueDate()!=null){
+				currentActivityStepVO.setDueDate(currentActivityStep.getDueDate().getTime());
+				currentActivityStepVO.setDueStatus(getTaskDueStatus(currentActivityStep.getDueDate().getTime()));						
+			}else{
+				currentActivityStepVO.setDueDate(0);
+			}				
+			if(currentActivityStep.getRelatedRole()!=null){
+				RoleVO currentRoleVO=new RoleVO();					
+				currentActivityStepVO.setRelatedRole(currentRoleVO);
+				Role relatedRole=currentActivityStep.getRelatedRole();
+				currentRoleVO.setActivitySpaceName(relatedRole.getActivitySpaceName());
+				currentRoleVO.setDescription(relatedRole.getDescription());
+				currentRoleVO.setDisplayName(relatedRole.getDisplayName());
+				currentRoleVO.setRoleName(relatedRole.getRoleName());	
+				currentActivityStepVO.setRelatedRole(currentRoleVO);					
+			}					
+			currentActivityStepVO.setStepAssignee(currentActivityStep.getStepAssignee());					
+			if(currentActivityStep.getStepAssignee()!=null){
+				List<String> stepAssigneeUserList=new ArrayList<String>();
+				stepAssigneeUserList.add(currentActivityStep.getStepAssignee());
+				
+				ParticipantDetailInfosQueryVO stepAssigneeParticipantDetailInfosQueryVO=new ParticipantDetailInfosQueryVO();						
+				stepAssigneeParticipantDetailInfosQueryVO.setParticipantsUserUidList(stepAssigneeUserList);		
+				stepAssigneeParticipantDetailInfosQueryVO.setParticipantScope(activitySpaceName);				
+				ParticipantDetailInfoVOsList stepAssigneeParticipantDetailInfoVOsList=
+						ParticipantOperationServiceRESTClient.getUsersDetailInfo(stepAssigneeParticipantDetailInfosQueryVO);			
+				List<ParticipantDetailInfoVO> stepAssigneeParticipantDetailInfoVOList=stepAssigneeParticipantDetailInfoVOsList.getParticipantDetailInfoVOsList();
+				if(stepAssigneeParticipantDetailInfoVOList!=null&&stepAssigneeParticipantDetailInfoVOList.size()>0){
+					currentActivityStepVO.setStepAssigneeParticipant(stepAssigneeParticipantDetailInfoVOList.get(0));
+				}
+			}					
+			currentActivityStepVO.setStepOwner(currentActivityStep.getStepOwner());
+			if(currentActivityStep.getStepOwner()!=null){
+				List<String> stepOwnerUserList=new ArrayList<String>();
+				stepOwnerUserList.add(currentActivityStep.getStepOwner());
+				ParticipantDetailInfosQueryVO stepOwnerParticipantDetailInfosQueryVO=new ParticipantDetailInfosQueryVO();						
+				stepOwnerParticipantDetailInfosQueryVO.setParticipantsUserUidList(stepOwnerUserList);		
+				stepOwnerParticipantDetailInfosQueryVO.setParticipantScope(activitySpaceName);
+				ParticipantDetailInfoVOsList stepOwnerParticipantDetailInfoVOsList=
+						ParticipantOperationServiceRESTClient.getUsersDetailInfo(stepOwnerParticipantDetailInfosQueryVO);			
+				List<ParticipantDetailInfoVO> stepOwnerParticipantDetailInfoVOList=stepOwnerParticipantDetailInfoVOsList.getParticipantDetailInfoVOsList();	
+				if(stepOwnerParticipantDetailInfoVOList!=null&&stepOwnerParticipantDetailInfoVOList.size()>0){
+					currentActivityStepVO.setStepOwnerParticipant(stepOwnerParticipantDetailInfoVOList.get(0));
+				}
+			}						
+			if(currentActivityStep.getActivityStepData()!=null&&currentActivityStep.getActivityStepData().length>0){					
+				ActivityData[] currentActivityData=currentActivityStep.getActivityStepData();				
+				ActivityDataFieldValueVOList activityDataFieldValueVOList=new ActivityDataFieldValueVOList();
+				List<ActivityDataFieldValueVO> activityDataFieldValueVOs=new ArrayList<ActivityDataFieldValueVO>();
+				activityDataFieldValueVOList.setActivityDataFieldValueList(activityDataFieldValueVOs);
+				if(currentActivityData!=null){
+					for(ActivityData activityData:currentActivityData){							
+						ActivityDataFieldValueVO activityDataFieldValueVO=buildActivityDataFieldValueVO(activityData);
+						activityDataFieldValueVOs.add(activityDataFieldValueVO);						
+					}
+				}			
+				currentActivityStepVO.setActivityDataFieldValueList(activityDataFieldValueVOList);
+			}							
+			return currentActivityStepVO;		
+		} catch (ActivityEngineProcessException e) {
+			e.printStackTrace();
+		} catch (ActivityEngineRuntimeException e) {			
+			e.printStackTrace();
+		} catch (ActivityEngineActivityException e) {			
+			e.printStackTrace();
+		} catch (ActivityEngineDataException e) {			
+			e.printStackTrace();
+		}		
+		return null;		
+	}	
 	
 	private static Map<String,ActivityData> buildActivityDataMap(ActivityDataFieldValueVOList activityDataFieldValueList){
 		ActivityData[] activityDataArray=buildActivityDataArray(activityDataFieldValueList);
@@ -2219,7 +2354,10 @@ public class ActivityManagementService {
 			currentActivityStepVO.setStepAssignee(currentActivityStep.getStepAssignee());				
 			currentActivityStepVO.setStepOwner(currentActivityStep.getStepOwner());					
 			currentActivityStepVO.setHasChildActivityStep(currentActivityStep.hasChildActivityStep());
-			currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());	
+			currentActivityStepVO.setHasParentActivityStep(currentActivityStep.hasParentActivityStep());
+			currentActivityStepVO.setStepPriority(currentActivityStep.getActivityStepPriority());
+			currentActivityStepVO.setIsDelegatedStep(currentActivityStep.isDelegatedActivityStep());
+			currentActivityStepVO.setIsSuspendedStep(currentActivityStep.isSuspendedActivityStep());							
 			if(currentActivityStep.getDueDate()!=null){
 				currentActivityStepVO.setFinishTime(currentActivityStep.getDueDate().getTime());
 				currentActivityStepVO.setDueStatus(getTaskDueStatus(currentActivityStep.getDueDate().getTime()));

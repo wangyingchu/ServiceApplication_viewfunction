@@ -101,8 +101,7 @@ public class AssigneeNotificationActivitySpaceEventListener extends ActivitySpac
 							String dueDateStr = format.format(activityStep.getDueDate());
 							notificationContentBuffer.append(dueDateStr);
 							notificationContentBuffer.append("</div>");
-						}
-						
+						}								
 						try {
 							if(activityStep.getRelatedRole()!=null){
 								notificationContentBuffer.append("<div style='font-size:0.9em;color:#666666;padding-top:5px;'>");
@@ -213,7 +212,7 @@ public class AssigneeNotificationActivitySpaceEventListener extends ActivitySpac
 		}
 	}
 	
-	public boolean isNewAssignedStep(ActivitySpaceEventContext activitySpaceEventContext,ActivityStep targetActivityStep){
+	public boolean isNewAssignedStep(ActivitySpaceEventContext activitySpaceEventContext,ActivityStep targetActivityStep){		
 		if(targetActivityStep.getFinishTime()!=null){
 			return false;
 		}
@@ -221,29 +220,39 @@ public class AssigneeNotificationActivitySpaceEventListener extends ActivitySpac
 		String activityId=targetActivityStep.getActivityId();
 		String activityStepId=targetActivityStep.getActivityStepId();
 		String activityStepDefinitionKey=targetActivityStep.getActivityStepDefinitionKey();
+		String activityStepName=targetActivityStep.getActivityStepName();		
 		if(stepAssignee==null){
 			return false;
 		}else{
 			ActivitySpace attachedActivitySpace=activitySpaceEventContext.getActivitySpace();
 			boolean isNewAssignedStep=true;
 			try {
-				List<ParticipantTask>  participantTaskList=attachedActivitySpace.getParticipant(stepAssignee).fetchParticipantTasks();
+				List<ParticipantTask> participantTaskList=attachedActivitySpace.getParticipant(stepAssignee).fetchParticipantTasks();
 				for(ParticipantTask participantTask:participantTaskList){
 					String taskStepId=participantTask.getActivityStep().getActivityStepId();
 					String taskStepDefinitionKey=participantTask.getActivityStep().getActivityStepDefinitionKey();
 					String taskActivityId=participantTask.getActivityStep().getActivityId();
-					if(taskStepId.equals(activityStepId)&&taskStepDefinitionKey.equals(activityStepDefinitionKey)&&taskActivityId.equals(activityId)){
-						isNewAssignedStep=false;
-						break;
-					}
-				}	
+					String taskActivityStepName=participantTask.getActivityStep().getActivityStepName();					
+					if(activityStepId!=null){
+						if(taskStepId.equals(activityStepId)&&taskStepDefinitionKey.equals(activityStepDefinitionKey)&&taskActivityId.equals(activityId)){
+							isNewAssignedStep=false;
+							break;
+						}
+					}else{
+						//if related activityStep is child step, the activityStepId will be none, in this case uses ActivityStepName
+						if(taskActivityStepName.equals(activityStepName)&&taskStepDefinitionKey.equals(activityStepDefinitionKey)&&taskActivityId.equals(activityId)){
+							isNewAssignedStep=false;
+							break;
+						}					
+					}					
+				}					
 				return isNewAssignedStep;
 			} catch (ActivityEngineRuntimeException e2) {
 				e2.printStackTrace();
 			} catch (ActivityEngineProcessException e) {
 				e.printStackTrace();
 			}
-		}
+		}		
 		return false;
 	}
 

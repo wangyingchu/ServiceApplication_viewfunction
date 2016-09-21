@@ -25,6 +25,9 @@ public class ActivityStepVO {
 	private boolean hasParentActivityStep;
 	private boolean hasChildActivityStep;
 	private String parentActivityStepName;	
+	private int stepPriority;
+	private boolean isSuspendedStep;
+	private boolean isDelegatedStep;
 	
 	public String getActivityType() {
 		return activityType;
@@ -139,5 +142,23 @@ public class ActivityStepVO {
 	}
 	public void setParentActivityStepName(String parentActivityStepName) {
 		this.parentActivityStepName = parentActivityStepName;
+	}
+	public int getStepPriority() {
+		return stepPriority;
+	}
+	public void setStepPriority(int stepPriority) {
+		this.stepPriority = stepPriority;
+	}
+	public boolean getIsSuspendedStep() {
+		return isSuspendedStep;
+	}
+	public void setIsSuspendedStep(boolean isSuspendedStep) {
+		this.isSuspendedStep = isSuspendedStep;
+	}
+	public boolean getIsDelegatedStep() {
+		return isDelegatedStep;
+	}
+	public void setIsDelegatedStep(boolean isDelegatedStep) {
+		this.isDelegatedStep = isDelegatedStep;
 	}	
 }
