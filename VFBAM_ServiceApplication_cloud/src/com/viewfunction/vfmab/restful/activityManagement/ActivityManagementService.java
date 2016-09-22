@@ -159,8 +159,7 @@ public class ActivityManagementService {
 		ActivitySpace activitySpace=ActivityComponentFactory.getActivitySpace(activitySpaceName);		
 		try {
 			Participant userParticipant=activitySpace.getParticipant(participantName);	
-			List<ParticipantTask> participantTasksList=userParticipant.fetchParticipantTasks();	
-			HashMap<String, BusinessActivityDefinition> businessActivityDefinitionMap=new HashMap<String,BusinessActivityDefinition>();
+			List<ParticipantTask> participantTasksList=userParticipant.fetchParticipantTasks();			
 			HashMap<String, Role> activityStepRelatedRoleMap=new HashMap<String,Role>();
 			for(ParticipantTask participantTask:participantTasksList){				
 				ParticipantTaskVO currentParticipantTaskVO=new ParticipantTaskVO();
@@ -197,17 +196,12 @@ public class ActivityManagementService {
 				
 				currentActivityStepVO.setStepAssignee(currentActivityStep.getStepAssignee());
 				currentActivityStepVO.setStepDescription(currentActivityStep.getStepDescription());
-				currentActivityStepVO.setStepOwner(currentActivityStep.getStepOwner());			
-			
-				BusinessActivityDefinition targetActivityDefinition=businessActivityDefinitionMap.get(currentActivityStep.getActivityType());
-				if(targetActivityDefinition==null){
-					targetActivityDefinition=currentActivityStep.getBusinessActivity().getActivityDefinition();
-					businessActivityDefinitionMap.put(currentActivityStep.getActivityType(), targetActivityDefinition);
-				}
-				String[] stepResponse=targetActivityDefinition.getStepDecisionPointChoiseList(currentActivityStep.getActivityStepDefinitionKey());
-				currentActivityStepVO.setStepResponse(stepResponse);
+				currentActivityStepVO.setStepOwner(currentActivityStep.getStepOwner());	
 				
-				//ActivityData[] stepDataArray=currentActivityStep.getActivityStepData();	
+				BusinessActivityDefinition targetActivityDefinition=currentActivityStep.getBusinessActivity().getActivityDefinition();					
+				String[] stepResponse=targetActivityDefinition.getStepDecisionPointChoiseList(currentActivityStep.getActivityStepDefinitionKey());
+				currentActivityStepVO.setStepResponse(stepResponse);				
+				
 				//use this method for better performance
 				DataFieldDefinition[] currentStepDataFieldDefinitionArray=targetActivityDefinition.getActivityStepsExposedDataField().get(currentActivityStep.getActivityStepDefinitionKey());
 				ActivityData[] stepDataArray=currentActivityStep.getBusinessActivity().getActivityData(currentStepDataFieldDefinitionArray);
