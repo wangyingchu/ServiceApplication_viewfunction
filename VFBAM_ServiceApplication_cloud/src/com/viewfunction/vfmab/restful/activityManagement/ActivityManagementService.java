@@ -2588,8 +2588,12 @@ public class ActivityManagementService {
 				String[] arrayDataFieldValue=(String[])dataFieldValue;				
 				activityDataFieldValueVO.setArrayDataFieldValue(arrayDataFieldValue);
 			}else{
-				String dataValue=(String)dataFieldValue;
-				activityDataFieldValueVO.setSingleDataFieldValue(dataValue);
+				if(dataFieldValue==null){
+					activityDataFieldValueVO.setSingleDataFieldValue(null);
+				}else{
+					String dataValue=(String)dataFieldValue;
+					activityDataFieldValueVO.setSingleDataFieldValue(dataValue);
+				}				
 			}		
 		}		
 		return activityDataFieldValueVO;
