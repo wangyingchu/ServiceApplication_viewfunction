@@ -1,6 +1,8 @@
 package com.viewfunction.contentRepository.util.helperImpl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -9,6 +11,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+
+import org.apache.jackrabbit.value.ValueFactoryImpl;
 
 import com.viewfunction.contentRepository.contentBureau.BaseContentObject;
 import com.viewfunction.contentRepository.contentBureauImpl.JCRContentObjectImpl;
@@ -26,7 +30,15 @@ public class JCRContentQueryHelperImpl implements ContentQueryHelper{
 		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
 		try {			
 			String np=jmpl.getJcrNode().getPath();			
-			String sql = "SELECT * FROM [vfcr:resource] AS file WHERE ISDESCENDANTNODE(['"+np+"']) and contains(file.*,'"+contentValue.trim()+"')";
+			//String sql = "SELECT * FROM [vfcr:resource] AS file WHERE ISDESCENDANTNODE(['"+np+"']) and contains(file.*,'"+contentValue.trim()+"')";
+			
+			//String sql = "SELECT * FROM [vfcr:resource] AS folder WHERE ISDESCENDANTNODE(folder,["+np+"]) and contains(file.*,'"+contentValue.trim()+"')";
+			
+			//String sql = "SELECT * FROM [vfcr:resource] AS folder WHERE ISDESCENDANTNODE(folder,["+np+"]) and contains([jcr:mimeType], 'pdf')";
+			
+			//String sql = "SELECT * FROM [vfcr:resource] AS folder WHERE ISDESCENDANTNODE(folder,["+np+"]) and contains(*, 'pdf')";
+			String sql = "SELECT * FROM [vfcr:resource] AS folder WHERE ISDESCENDANTNODE(folder,["+np+"]) and contains(*, '"+contentValue.trim()+"')";
+			
 			return selectBinaryContentsBySQL2(contentObject,sql);			
 		} catch (RepositoryException e) {
 			ContentReposityDataException cpe=new ContentReposityDataException();
@@ -39,8 +51,8 @@ public class JCRContentQueryHelperImpl implements ContentQueryHelper{
 	public List<TextContent> selectTextContentsByEncoding(BaseContentObject contentObject, String encodingValue)throws ContentReposityException {
 		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
 		try {			
-			String np=jmpl.getJcrNode().getPath();
-			String sql = "SELECT * FROM [vfcr:resource] where ISDESCENDANTNODE(['"+np+"']) and [jcr:encoding] LIKE '%"+encodingValue.trim()+"%'";	
+			String np=jmpl.getJcrNode().getPath();			
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"]) and [jcr:encoding] LIKE '%"+encodingValue.trim()+"%'";
 			return selectTextContentsBySQL2(contentObject,sql);					
 		} catch (RepositoryException e) {
 			ContentReposityDataException cpe=new ContentReposityDataException();
@@ -53,8 +65,8 @@ public class JCRContentQueryHelperImpl implements ContentQueryHelper{
 	public List<BinaryContent> selectBinaryContentsByMimeType(BaseContentObject contentObject, String mimeTypeValue)throws ContentReposityException {
 		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
 		try {			
-			String np=jmpl.getJcrNode().getPath();			
-			String sql = "SELECT * FROM [vfcr:resource] where ISDESCENDANTNODE(['"+np+"']) and [jcr:mimeType] LIKE '%"+mimeTypeValue.trim()+"%'";	
+			String np=jmpl.getJcrNode().getPath();				
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"]) and [jcr:mimeType] LIKE '%"+mimeTypeValue.trim()+"%'";
 			return selectBinaryContentsBySQL2(contentObject,sql);			
 		} catch (RepositoryException e) {
 			ContentReposityDataException cpe=new ContentReposityDataException();
@@ -68,8 +80,8 @@ public class JCRContentQueryHelperImpl implements ContentQueryHelper{
 	public List<TextContent> selectTextContentsByMimeType(BaseContentObject contentObject, String mimeTypeValue)throws ContentReposityException {
 		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
 		try {			
-			String np=jmpl.getJcrNode().getPath();				
-			String sql = "SELECT * FROM [vfcr:resource] where ISDESCENDANTNODE(['"+np+"']) and [jcr:mimeType] LIKE '%"+mimeTypeValue.trim()+"%' and [jcr:encoding] <>''";	
+			String np=jmpl.getJcrNode().getPath();			
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"]) and [jcr:mimeType] LIKE '%"+mimeTypeValue.trim()+"%' and [jcr:encoding] <>''";
 			return selectTextContentsBySQL2(contentObject,sql);			
 		} catch (RepositoryException e) {
 			ContentReposityDataException cpe=new ContentReposityDataException();
@@ -82,11 +94,8 @@ public class JCRContentQueryHelperImpl implements ContentQueryHelper{
 	public List<BinaryContent> selectBinaryContentsByTitle(BaseContentObject contentObject, String titleValue)throws ContentReposityException {
 		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
 		try {			
-			String np=jmpl.getJcrNode().getPath();
-			String sql = "SELECT * FROM [vfcr:resource] where ISDESCENDANTNODE(['"+np+"']) and [vfcr:contentName] LIKE '%"+titleValue.trim()+"%'";	
-			System.out.println(np);
-			System.out.println(sql);
-			
+			String np=jmpl.getJcrNode().getPath();				
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"]) and [vfcr:contentName] LIKE '%"+titleValue.trim()+"%'";			
 			return selectBinaryContentsBySQL2(contentObject,sql);			
 		} catch (RepositoryException e) {
 			ContentReposityDataException cpe=new ContentReposityDataException();
@@ -99,8 +108,8 @@ public class JCRContentQueryHelperImpl implements ContentQueryHelper{
 	public List<TextContent> selectTextContentsByTitle(BaseContentObject contentObject, String titleValue)throws ContentReposityException {
 		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
 		try {			
-			String np=jmpl.getJcrNode().getPath();			
-			String sql = "SELECT * FROM [vfcr:resource] where ISDESCENDANTNODE(['"+np+"']) and [vfcr:contentName] LIKE '%"+titleValue.trim()+"%' and [jcr:encoding] <>''";	
+			String np=jmpl.getJcrNode().getPath();
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"]) and [vfcr:contentName] LIKE '%"+titleValue.trim()+"%' and [jcr:encoding] <>''";
 			return selectTextContentsBySQL2(contentObject,sql);			
 		} catch (RepositoryException e) {
 			ContentReposityDataException cpe=new ContentReposityDataException();
@@ -185,4 +194,206 @@ public class JCRContentQueryHelperImpl implements ContentQueryHelper{
 			throw cpe;
 		}		
 	}
+
+	@Override
+	public List<BinaryContent> selectBinaryContentsByCreator(BaseContentObject contentObject, String creatorValue) throws ContentReposityException {
+		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
+		try {			
+			String np=jmpl.getJcrNode().getPath();				
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"]) and [vfcr:creator] LIKE '%"+creatorValue.trim()+"%'";
+			return selectBinaryContentsBySQL2(contentObject,sql);			
+		} catch (RepositoryException e) {
+			ContentReposityDataException cpe=new ContentReposityDataException();
+			cpe.initCause(e);
+			e.printStackTrace();
+			throw cpe;
+		}
+	}
+
+	@Override
+	public List<TextContent> selectTextContentsByCreator(BaseContentObject contentObject, String creatorValue) throws ContentReposityException {
+		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
+		try {			
+			String np=jmpl.getJcrNode().getPath();			
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"]) and [vfcr:creator] LIKE '%"+creatorValue.trim()+"%' and [jcr:encoding] <>''";
+			return selectTextContentsBySQL2(contentObject,sql);			
+		} catch (RepositoryException e) {
+			ContentReposityDataException cpe=new ContentReposityDataException();
+			cpe.initCause(e);
+			throw cpe;
+		}
+	}
+
+	@Override
+	public List<BinaryContent> selectBinaryContentsByLastUpdater(BaseContentObject contentObject,String lastUpdaterValue) throws ContentReposityException {
+		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
+		try {			
+			String np=jmpl.getJcrNode().getPath();				
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"]) and [vfcr:lastUpdatePerson] LIKE '%"+lastUpdaterValue.trim()+"%'";
+			return selectBinaryContentsBySQL2(contentObject,sql);			
+		} catch (RepositoryException e) {
+			ContentReposityDataException cpe=new ContentReposityDataException();
+			cpe.initCause(e);
+			e.printStackTrace();
+			throw cpe;
+		}
+	}
+
+	@Override
+	public List<TextContent> selectTextContentsByLastUpdater(BaseContentObject contentObject, String lastUpdaterValue) throws ContentReposityException {
+		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
+		try {			
+			String np=jmpl.getJcrNode().getPath();			
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"]) and [vfcr:lastUpdatePerson] LIKE '%"+lastUpdaterValue.trim()+"%' and [jcr:encoding] <>''";
+			return selectTextContentsBySQL2(contentObject,sql);			
+		} catch (RepositoryException e) {
+			ContentReposityDataException cpe=new ContentReposityDataException();
+			cpe.initCause(e);
+			throw cpe;
+		}
+	}
+
+	@Override
+	public List<BinaryContent> selectBinaryContentsByDescription(BaseContentObject contentObject,String descriptionValue) throws ContentReposityException {
+		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
+		try {			
+			String np=jmpl.getJcrNode().getPath();				
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"]) and [vfcr:contentDescription] LIKE '%"+descriptionValue.trim()+"%'";
+			return selectBinaryContentsBySQL2(contentObject,sql);			
+		} catch (RepositoryException e) {
+			ContentReposityDataException cpe=new ContentReposityDataException();
+			cpe.initCause(e);
+			e.printStackTrace();
+			throw cpe;
+		}
+	}
+
+	@Override
+	public List<TextContent> selectTextContentsByByDescription(BaseContentObject contentObject, String descriptionValue) throws ContentReposityException {
+		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
+		try {			
+			String np=jmpl.getJcrNode().getPath();			
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"]) and [vfcr:contentDescription] LIKE '%"+descriptionValue.trim()+"%' and [jcr:encoding] <>''";
+			return selectTextContentsBySQL2(contentObject,sql);			
+		} catch (RepositoryException e) {
+			ContentReposityDataException cpe=new ContentReposityDataException();
+			cpe.initCause(e);
+			throw cpe;
+		}
+	}
+
+	@Override
+	public List<BinaryContent> selectBinaryContentsByCreateDate(BaseContentObject contentObject, Date fromDateValue,Date toDateValue) throws ContentReposityException {
+		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
+		try {			
+			String np=jmpl.getJcrNode().getPath();				
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"])";
+			
+			if(fromDateValue!=null){				
+				Calendar cal= Calendar.getInstance();
+				cal.setTime(fromDateValue);
+				String fromDateStringValue=ValueFactoryImpl.getInstance().createValue(cal).getString();				
+				sql=sql+" and [vfcr:createDate] >= CAST('"+fromDateStringValue+"' AS DATE)";
+			}
+			if(toDateValue!=null){
+				Calendar cal= Calendar.getInstance();
+				cal.setTime(toDateValue);
+				String toDateStringValue=ValueFactoryImpl.getInstance().createValue(cal).getString();				
+				sql=sql+" and [vfcr:createDate] <= CAST('"+toDateStringValue+"' AS DATE)";				
+			}
+			return selectBinaryContentsBySQL2(contentObject,sql);			
+		} catch (RepositoryException e) {
+			ContentReposityDataException cpe=new ContentReposityDataException();
+			cpe.initCause(e);
+			e.printStackTrace();
+			throw cpe;
+		}
+	}
+
+	@Override
+	public List<TextContent> selectTextContentsByCreateDate(BaseContentObject contentObject, Date fromDateValue,Date toDateValue) throws ContentReposityException {
+		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
+		try {			
+			String np=jmpl.getJcrNode().getPath();				
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"])";
+			
+			if(fromDateValue!=null){				
+				Calendar cal= Calendar.getInstance();
+				cal.setTime(fromDateValue);
+				String fromDateStringValue=ValueFactoryImpl.getInstance().createValue(cal).getString();				
+				sql=sql+" and [vfcr:createDate] >= CAST('"+fromDateStringValue+"' AS DATE)";
+			}
+			if(toDateValue!=null){
+				Calendar cal= Calendar.getInstance();
+				cal.setTime(toDateValue);
+				String toDateStringValue=ValueFactoryImpl.getInstance().createValue(cal).getString();				
+				sql=sql+" and [vfcr:createDate] <= CAST('"+toDateStringValue+"' AS DATE)";				
+			}
+			
+			sql=sql+" and [jcr:encoding] <>''";			
+			return selectTextContentsBySQL2(contentObject,sql);			
+		} catch (RepositoryException e) {
+			ContentReposityDataException cpe=new ContentReposityDataException();
+			cpe.initCause(e);
+			e.printStackTrace();
+			throw cpe;
+		}
+	}
+
+	@Override
+	public List<BinaryContent> selectBinaryContentsByLastUpdateDate(BaseContentObject contentObject, Date fromDateValue,Date toDateValue) throws ContentReposityException {
+		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
+		try {			
+			String np=jmpl.getJcrNode().getPath();				
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"])";
+			
+			if(fromDateValue!=null){				
+				Calendar cal= Calendar.getInstance();
+				cal.setTime(fromDateValue);
+				String fromDateStringValue=ValueFactoryImpl.getInstance().createValue(cal).getString();				
+				sql=sql+" and [vfcr:lastUpdateDate] >= CAST('"+fromDateStringValue+"' AS DATE)";
+			}
+			if(toDateValue!=null){
+				Calendar cal= Calendar.getInstance();
+				cal.setTime(toDateValue);
+				String toDateStringValue=ValueFactoryImpl.getInstance().createValue(cal).getString();				
+				sql=sql+" and [vfcr:lastUpdateDate] <= CAST('"+toDateStringValue+"' AS DATE)";				
+			}
+			return selectBinaryContentsBySQL2(contentObject,sql);			
+		} catch (RepositoryException e) {
+			ContentReposityDataException cpe=new ContentReposityDataException();
+			cpe.initCause(e);
+			e.printStackTrace();
+			throw cpe;
+		}
+	}
+
+	@Override
+	public List<TextContent> selectTextContentsByLastUpdateDate(BaseContentObject contentObject, Date fromDateValue,Date toDateValue) throws ContentReposityException {
+		JCRContentObjectImpl jmpl=(JCRContentObjectImpl)contentObject;
+		try {			
+			String np=jmpl.getJcrNode().getPath();				
+			String sql = "SELECT * FROM [vfcr:resource] AS folder where ISDESCENDANTNODE(folder,["+np+"])";
+			
+			if(fromDateValue!=null){				
+				Calendar cal= Calendar.getInstance();
+				cal.setTime(fromDateValue);
+				String fromDateStringValue=ValueFactoryImpl.getInstance().createValue(cal).getString();				
+				sql=sql+" and [vfcr:lastUpdateDate] >= CAST('"+fromDateStringValue+"' AS DATE)";
+			}
+			if(toDateValue!=null){
+				Calendar cal= Calendar.getInstance();
+				cal.setTime(toDateValue);
+				String toDateStringValue=ValueFactoryImpl.getInstance().createValue(cal).getString();				
+				sql=sql+" and [vfcr:lastUpdateDate] <= CAST('"+toDateStringValue+"' AS DATE)";				
+			}
+			sql=sql+" and [jcr:encoding] <>''";			
+			return selectTextContentsBySQL2(contentObject,sql);			
+		} catch (RepositoryException e) {
+			ContentReposityDataException cpe=new ContentReposityDataException();
+			cpe.initCause(e);
+			e.printStackTrace();
+			throw cpe;
+		}
+	}	
 }

@@ -17,6 +17,7 @@ public class PerportyHandler {
 	public static String USER_AUTHENTICATION_LDAP_SERVICE_PORT="USER_AUTHENTICATION_LDAP_SERVICE_PORT";
 	public static String MONGODB_SERVER_ADDRESS="MONGODB_SERVER_ADDRESS";
 	public static String MONGODB_SERVER_PORT="MONGODB_SERVER_PORT";
+	public static String ENABLE_GLOBAL_FULLTEXT_SEARCH="ENABLE_GLOBAL_FULLTEXT_SEARCH";
 	
 	public static String getPerportyValue(String resourceFileName) throws ContentReposityRuntimeException{		
 		_properties=new Properties();
