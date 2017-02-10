@@ -28,6 +28,7 @@ public class ActivityStepVO {
 	private int stepPriority;
 	private boolean isSuspendedStep;
 	private boolean isDelegatedStep;
+	private String stepProcessEditor;
 	
 	public String getActivityType() {
 		return activityType;
@@ -160,5 +161,11 @@ public class ActivityStepVO {
 	}
 	public void setIsDelegatedStep(boolean isDelegatedStep) {
 		this.isDelegatedStep = isDelegatedStep;
+	}
+	public String getStepProcessEditor() {
+		return stepProcessEditor;
+	}
+	public void setStepProcessEditor(String stepProcessEditor) {
+		this.stepProcessEditor = stepProcessEditor;
 	}	
 }

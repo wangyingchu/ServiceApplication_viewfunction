@@ -230,7 +230,15 @@ public class ActivityManagementService {
 					currentRoleVO.setDescription(relatedRole.getDescription());
 					currentRoleVO.setDisplayName(relatedRole.getDisplayName());
 					currentRoleVO.setRoleName(relatedRole.getRoleName());						
-				}							
+				}					
+				
+				Map<String,String> stepProcessEditorsMap=activitySpace.getBusinessActivityDefinitionStepProcessEditorsInfo(currentActivityStep.getActivityType());					
+				if(stepProcessEditorsMap!=null){
+					String currentStepProcessEditor=stepProcessEditorsMap.get(currentActivityStep.getActivityStepDefinitionKey());
+					if(currentStepProcessEditor!=null){							
+						currentActivityStepVO.setStepProcessEditor(currentStepProcessEditor);							
+					}
+				}		
 				
 				currentParticipantTaskVO.setActivityStep(currentActivityStepVO);
 				currentParticipantTaskVO.setActivityStepName(participantTask.getActivityStepName());
@@ -335,7 +343,15 @@ public class ActivityManagementService {
 						currentRoleVO.setDescription(relatedRole.getDescription());
 						currentRoleVO.setDisplayName(relatedRole.getDisplayName());
 						currentRoleVO.setRoleName(relatedRole.getRoleName());						
-					}							
+					}
+					
+					Map<String,String> stepProcessEditorsMap=activitySpace.getBusinessActivityDefinitionStepProcessEditorsInfo(currentActivityStep.getActivityType());					
+					if(stepProcessEditorsMap!=null){
+						String currentStepProcessEditor=stepProcessEditorsMap.get(currentActivityStep.getActivityStepDefinitionKey());
+						if(currentStepProcessEditor!=null){							
+							currentActivityStepVO.setStepProcessEditor(currentStepProcessEditor);							
+						}
+					}
 					
 					currentParticipantTaskVO.setActivityStep(currentActivityStepVO);
 					currentParticipantTaskVO.setActivityStepName(participantTask.getActivityStepName());
@@ -794,7 +810,7 @@ public class ActivityManagementService {
 			if(crrentRole!=null){
 				RoleQueue[] currentRoleQueues=crrentRole.getRelatedRoleQueues();			
 				for(RoleQueue currentRoleQueue:currentRoleQueues){
-					RoleQueueVO currentRoleQueueVO=buildRoleQueueVO(currentRoleQueue,false);
+					RoleQueueVO currentRoleQueueVO=buildRoleQueueVO(currentRoleQueue,false,activitySpace);
 					roleQueueVOs.add(currentRoleQueueVO);				
 				}	
 			}					
@@ -825,7 +841,7 @@ public class ActivityManagementService {
 					RoleQueue[] currentRoleQueues=currentRole.getRelatedRoleQueues();
 					if(currentRoleQueues!=null){
 						for(RoleQueue currentRoleQueue:currentRoleQueues){
-							RoleQueueVO currentRoleQueueVO=buildRoleQueueVO(currentRoleQueue,true);
+							RoleQueueVO currentRoleQueueVO=buildRoleQueueVO(currentRoleQueue,true,activitySpace);
 							roleQueueVOs.add(currentRoleQueueVO);					
 						}
 					}
@@ -877,7 +893,7 @@ public class ActivityManagementService {
 		ActivitySpace activitySpace=ActivityComponentFactory.getActivitySpace(activitySpaceName);	
 		try {
 			RoleQueue currentRoleQueue=activitySpace.getRoleQueue(roleQueueName);
-			RoleQueueVO roleQueueVO=buildRoleQueueVO(currentRoleQueue,true);			
+			RoleQueueVO roleQueueVO=buildRoleQueueVO(currentRoleQueue,true,activitySpace);			
 			return roleQueueVO;
 		} catch (ActivityEngineRuntimeException e) {			
 			e.printStackTrace();
@@ -2292,7 +2308,7 @@ public class ActivityManagementService {
 		return activityDataArray;	
 	}		
 	
-	private static RoleQueueVO buildRoleQueueVO(RoleQueue currentRoleQueue,boolean exposeRelatedRolesInfo) throws ActivityEngineRuntimeException, ActivityEngineActivityException, ActivityEngineProcessException, ActivityEngineDataException{		
+	private static RoleQueueVO buildRoleQueueVO(RoleQueue currentRoleQueue,boolean exposeRelatedRolesInfo,ActivitySpace activitySpace) throws ActivityEngineRuntimeException, ActivityEngineActivityException, ActivityEngineProcessException, ActivityEngineDataException{		
 		if(currentRoleQueue==null){return null;}
 		
 		RoleQueueVO roleQueueVO=new RoleQueueVO();
@@ -2374,6 +2390,14 @@ public class ActivityManagementService {
 			}
 			String[] stepResponse=targetActivityDefinition.getStepDecisionPointChoiseList(currentActivityStep.getActivityStepDefinitionKey());
 			currentActivityStepVO.setStepResponse(stepResponse);	
+			
+			Map<String,String> stepProcessEditorsMap=activitySpace.getBusinessActivityDefinitionStepProcessEditorsInfo(currentActivityStep.getActivityType());					
+			if(stepProcessEditorsMap!=null){
+				String currentStepProcessEditor=stepProcessEditorsMap.get(currentActivityStep.getActivityStepDefinitionKey());
+				if(currentStepProcessEditor!=null){							
+					currentActivityStepVO.setStepProcessEditor(currentStepProcessEditor);							
+				}
+			}			
 			containedActivyStepVOs.add(currentActivityStepVO);	
 		}
 		//use this method for better performance
