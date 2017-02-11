@@ -25,6 +25,7 @@ import com.viewfunction.activityEngine.activityView.RoleQueue;
 import com.viewfunction.activityEngine.activityView.common.ActivityComment;
 import com.viewfunction.activityEngine.activityView.common.ActivityData;
 import com.viewfunction.activityEngine.activityView.common.ActivityStep;
+import com.viewfunction.activityEngine.activityView.common.CustomStructure;
 import com.viewfunction.activityEngine.activityView.common.DataFieldDefinition;
 import com.viewfunction.activityEngine.activityView.common.ParticipantTask;
 import com.viewfunction.activityEngine.exception.ActivityEngineActivityException;
@@ -42,6 +43,8 @@ import com.viewfunction.participantManagement.operation.restfulClient.Participan
 import com.viewfunction.processRepository.exception.ProcessRepositoryRuntimeException;
 import com.viewfunction.processRepository.processBureau.HistoricProcessStep;
 import com.viewfunction.processRepository.processBureau.ProcessSpace;
+import com.viewfunction.vfmab.restful.userManagement.CustomStructureVO;
+import com.viewfunction.vfmab.restful.util.CommonOperationUtil;
 
 @Path("/activityManagementService")  
 @Produces("application/json")
@@ -2191,6 +2194,49 @@ public class ActivityManagementService {
 		}		
 		return null;		
 	}	
+	
+	@GET
+    @Path("/activityTypeGlobalConfigurationItem/{applicationSpaceName}/{activityType}/{configurationItem}")
+	@Produces("application/json")
+	public CustomStructureVO getBusinessTypeGlobalConfigurationItem(@PathParam("applicationSpaceName")String activitySpaceName,
+			@PathParam("activityType")String activityType,@PathParam("configurationItem")String configurationItem){		
+		ActivitySpace activitySpace=ActivityComponentFactory.getActivitySpace(activitySpaceName);
+		CustomStructureVO resultCustomStructureVO=null;
+		try {			
+			CustomStructure globalCustomStructure=activitySpace.getBusinessActivityDefinitionGlobalCustomStructure(activityType);	
+			if(globalCustomStructure!=null){
+				CustomStructure targetCustomStructure=globalCustomStructure.getSubCustomStructure(configurationItem);				
+				if(targetCustomStructure!=null){
+					resultCustomStructureVO= CommonOperationUtil.loadCustomStructure(targetCustomStructure);	
+				}
+			}
+		} catch (ActivityEngineRuntimeException e) {			
+			e.printStackTrace();
+		} catch (ActivityEngineDataException e) {			
+			e.printStackTrace();
+		}				
+		return resultCustomStructureVO;
+	}
+	
+	@GET
+    @Path("/activityTypeStepConfigurationItem/{applicationSpaceName}/{activityType}/{stepId}")
+	@Produces("application/json")
+	public CustomStructureVO getBusinessTypeStepCustomStructure(@PathParam("applicationSpaceName")String activitySpaceName,
+			@PathParam("activityType")String activityType,@PathParam("stepId")String stepId){		
+		ActivitySpace activitySpace=ActivityComponentFactory.getActivitySpace(activitySpaceName);
+		CustomStructureVO resultCustomStructureVO=null;
+		try {			
+			CustomStructure stepCustomStructure=activitySpace.getBusinessActivityDefinitionStepCustomStructure(activityType,stepId);
+			if(stepCustomStructure!=null){
+				resultCustomStructureVO= CommonOperationUtil.loadCustomStructure(stepCustomStructure);									
+			}				
+		} catch (ActivityEngineRuntimeException e) {			
+			e.printStackTrace();
+		} catch (ActivityEngineDataException e) {			
+			e.printStackTrace();
+		}				
+		return resultCustomStructureVO;
+	}
 	
 	private static Map<String,ActivityData> buildActivityDataMap(ActivityDataFieldValueVOList activityDataFieldValueList){
 		ActivityData[] activityDataArray=buildActivityDataArray(activityDataFieldValueList);
