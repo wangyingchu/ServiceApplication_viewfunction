@@ -11,12 +11,19 @@ import javax.servlet.ServletContextListener;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeManager;
 
+import com.viewfunction.activityEngine.util.cache.ActivityEngineCache;
+import com.viewfunction.activityEngine.util.cache.ActivityEngineCacheUtil;
+import com.viewfunction.activityEngine.util.factory.ActivityComponentFactory;
 import com.viewfunction.contentRepository.util.RuntimeEnvironmentHandler;
 
 public class ServiceResourceInitializer implements ServletContextListener{
+	
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {		
-		ServiceResourceHolder.getOfficeManager().stop();		
+		ServiceResourceHolder.getOfficeManager().stop();	
+		if(ServiceResourceHolder.getActivityEngineCache()!=null){
+			ServiceResourceHolder.getActivityEngineCache().clearCache();
+		}		
 	}
 
 	@Override
@@ -39,6 +46,24 @@ public class ServiceResourceInitializer implements ServletContextListener{
 			officeManager = new DefaultOfficeManagerConfiguration().buildOfficeManager();
 		}		
 		ServiceResourceHolder.setOfficeManager(officeManager);
-		officeManager.start();	
+		officeManager.start();
+		
+		boolean enableActivityEngineCache=false;
+		String serviceApplicationGlobalConfigFile=RuntimeEnvironmentHandler.getApplicationRootPath()+"ServiceApplicationGlobalCfg.properties";		
+		Properties _globalConfigProperties=new Properties();
+		try {
+			_globalConfigProperties.load(new FileInputStream(serviceApplicationGlobalConfigFile));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}				
+		String enableActivityEngineCacheFlag=_globalConfigProperties.getProperty("ENABLE_ACTIVITYENGINE_CACHE");
+		enableActivityEngineCache=Boolean.parseBoolean(enableActivityEngineCacheFlag);
+		if(enableActivityEngineCache){
+			ActivityEngineCache activityEngineCache=new ActivityEngineCacheUtil().initActivityEngineCache();
+			ActivityComponentFactory.setActivityEngineCache(activityEngineCache);
+			ServiceResourceHolder.setActivityEngineCache(activityEngineCache);
+		}
 	}
 }

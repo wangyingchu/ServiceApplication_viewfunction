@@ -164,6 +164,7 @@ public class ActivityManagementService {
 			Participant userParticipant=activitySpace.getParticipant(participantName);	
 			List<ParticipantTask> participantTasksList=userParticipant.fetchParticipantTasks();			
 			HashMap<String, Role> activityStepRelatedRoleMap=new HashMap<String,Role>();
+			HashMap<String,Map<String,String>> activitySpaceStepProcessEditorsMappingMap=new HashMap<String,Map<String,String>>();
 			for(ParticipantTask participantTask:participantTasksList){				
 				ParticipantTaskVO currentParticipantTaskVO=new ParticipantTaskVO();
 				participantTaskVOsList.add(currentParticipantTaskVO);				
@@ -233,9 +234,15 @@ public class ActivityManagementService {
 					currentRoleVO.setDescription(relatedRole.getDescription());
 					currentRoleVO.setDisplayName(relatedRole.getDisplayName());
 					currentRoleVO.setRoleName(relatedRole.getRoleName());						
-				}					
+				}
 				
-				Map<String,String> stepProcessEditorsMap=activitySpace.getBusinessActivityDefinitionStepProcessEditorsInfo(currentActivityStep.getActivityType());					
+				Map<String,String> stepProcessEditorsMap=activitySpaceStepProcessEditorsMappingMap.get(currentActivityStep.getActivityType());
+				if(stepProcessEditorsMap==null){
+					stepProcessEditorsMap=activitySpace.getBusinessActivityDefinitionStepProcessEditorsInfo(currentActivityStep.getActivityType());
+					if(stepProcessEditorsMap!=null){
+						activitySpaceStepProcessEditorsMappingMap.put(currentActivityStep.getActivityType(), stepProcessEditorsMap);
+					}				
+				}					
 				if(stepProcessEditorsMap!=null){
 					String currentStepProcessEditor=stepProcessEditorsMap.get(currentActivityStep.getActivityStepDefinitionKey());
 					if(currentStepProcessEditor!=null){							
@@ -835,7 +842,8 @@ public class ActivityManagementService {
 	public List<RoleQueueVO> getParticipantRelatedQueueTasksDetail(@PathParam("applicationSpaceName")String applicationSpaceName,@PathParam("participantName")String participantName){		
 		String activitySpaceName=applicationSpaceName;
 		ActivitySpace activitySpace=ActivityComponentFactory.getActivitySpace(activitySpaceName);
-		List<RoleQueueVO> roleQueueVOs=new ArrayList<RoleQueueVO>();		
+		List<RoleQueueVO> roleQueueVOs=new ArrayList<RoleQueueVO>();
+		List<String> alreadyGeneratedRoleQueues=new ArrayList<String>();
 		try {
 			Participant currentParticipant=activitySpace.getParticipant(participantName);			
 			Role[] participantRelatedRoles=currentParticipant.getRoles();
@@ -843,9 +851,12 @@ public class ActivityManagementService {
 				for(Role currentRole:participantRelatedRoles){
 					RoleQueue[] currentRoleQueues=currentRole.getRelatedRoleQueues();
 					if(currentRoleQueues!=null){
-						for(RoleQueue currentRoleQueue:currentRoleQueues){
-							RoleQueueVO currentRoleQueueVO=buildRoleQueueVO(currentRoleQueue,true,activitySpace);
-							roleQueueVOs.add(currentRoleQueueVO);					
+						for(RoleQueue currentRoleQueue:currentRoleQueues){							
+							if(!alreadyGeneratedRoleQueues.contains(currentRoleQueue.getQueueName())){
+								RoleQueueVO currentRoleQueueVO=buildRoleQueueVO(currentRoleQueue,true,activitySpace);
+								roleQueueVOs.add(currentRoleQueueVO);								
+								alreadyGeneratedRoleQueues.add(currentRoleQueue.getQueueName());
+							}
 						}
 					}
 				}			
@@ -859,6 +870,8 @@ public class ActivityManagementService {
 		} catch (ActivityEngineDataException e) {			
 			e.printStackTrace();
 		}		
+		alreadyGeneratedRoleQueues.clear();
+		alreadyGeneratedRoleQueues=null;
 		return roleQueueVOs;
 	}
 	
@@ -2260,59 +2273,83 @@ public class ActivityManagementService {
 			Object dataValue=null;
 			if(dataFieldMultiProp){
 				String[] arrayFieldValue=currentActivityDataFieldValueVO.getArrayDataFieldValue();
-				String fieldTypeString=currentActivityDataFieldValueVO.getActivityDataDefinition().getFieldType();				
-				if(fieldTypeString.endsWith(DATAFIELD_TYPE_BOOLEAN)){					
-					boolean[] booleanArray=new boolean[arrayFieldValue.length];
-					for(int idx=0;idx<arrayFieldValue.length;idx++){
-						String stringValue=arrayFieldValue[idx];
-						boolean booleanValue=Boolean.parseBoolean(stringValue);
-						booleanArray[idx]=booleanValue;						
-					}			
-					dataValue=booleanArray;
+				String fieldTypeString=currentActivityDataFieldValueVO.getActivityDataDefinition().getFieldType();
+				if(fieldTypeString.endsWith(DATAFIELD_TYPE_BOOLEAN)){
+					if(arrayFieldValue!=null){					
+						boolean[] booleanArray=new boolean[arrayFieldValue.length];
+						for(int idx=0;idx<arrayFieldValue.length;idx++){
+							String stringValue=arrayFieldValue[idx];
+							boolean booleanValue=Boolean.parseBoolean(stringValue);
+							booleanArray[idx]=booleanValue;						
+						}			
+						dataValue=booleanArray;
+					}else{
+						dataValue=new boolean[0];
+					}
 				}
 				if(fieldTypeString.endsWith(DATAFIELD_TYPE_DOUBLE)){
-					double[] doubleArray=new double[arrayFieldValue.length];
-					for(int idx=0;idx<arrayFieldValue.length;idx++){
-						String stringValue=arrayFieldValue[idx];
-						double doubleValue=Double.parseDouble(stringValue);
-						doubleArray[idx]=doubleValue;						
-					}	
-					dataValue=doubleArray;					
+					if(arrayFieldValue!=null){
+						double[] doubleArray=new double[arrayFieldValue.length];
+						for(int idx=0;idx<arrayFieldValue.length;idx++){
+							String stringValue=arrayFieldValue[idx];
+							double doubleValue=Double.parseDouble(stringValue);
+							doubleArray[idx]=doubleValue;						
+						}	
+						dataValue=doubleArray;	
+					}else{
+						dataValue=new double[0];
+					}
 				}
 				if(fieldTypeString.endsWith(DATAFIELD_TYPE_LONG)){
-					long[] longArray=new long[arrayFieldValue.length];
-					for(int idx=0;idx<arrayFieldValue.length;idx++){
-						String stringValue=arrayFieldValue[idx];
-						long longValue=Long.parseLong(stringValue);
-						longArray[idx]=longValue;						
-					}	
-					dataValue=longArray;					
+					if(arrayFieldValue!=null){
+						long[] longArray=new long[arrayFieldValue.length];
+						for(int idx=0;idx<arrayFieldValue.length;idx++){
+							String stringValue=arrayFieldValue[idx];
+							long longValue=Long.parseLong(stringValue);
+							longArray[idx]=longValue;						
+						}	
+						dataValue=longArray;
+					}else{
+						dataValue=new long[0];
+					}
 				}
-				if(fieldTypeString.endsWith(DATAFIELD_TYPE_DECIMAL)){	
-					BigDecimal[] bigDecimalArray=new BigDecimal[arrayFieldValue.length];
-					for(int idx=0;idx<arrayFieldValue.length;idx++){
-						String stringValue=arrayFieldValue[idx];
-						BigDecimal bigDecimalValue=new BigDecimal(stringValue);						
-						bigDecimalArray[idx]=bigDecimalValue;						
-					}	
-					dataValue=bigDecimalArray;	
+				if(fieldTypeString.endsWith(DATAFIELD_TYPE_DECIMAL)){
+					if(arrayFieldValue!=null){
+						BigDecimal[] bigDecimalArray=new BigDecimal[arrayFieldValue.length];
+						for(int idx=0;idx<arrayFieldValue.length;idx++){
+							String stringValue=arrayFieldValue[idx];
+							BigDecimal bigDecimalValue=new BigDecimal(stringValue);						
+							bigDecimalArray[idx]=bigDecimalValue;						
+						}	
+						dataValue=bigDecimalArray;	
+					}else{
+						dataValue=new BigDecimal[0];
+					}
 				}
 				if(fieldTypeString.endsWith(DATAFIELD_TYPE_BINARY)){}
 				if(fieldTypeString.endsWith(DATAFIELD_TYPE_DATE)){
-					Calendar[] calendarArray=new Calendar[arrayFieldValue.length];
-					for(int idx=0;idx<arrayFieldValue.length;idx++){
-						String stringValue=arrayFieldValue[idx];
-						long timeStamp=Long.parseLong(stringValue);
-						Date date = new Date(timeStamp);
-						Calendar calendar = Calendar.getInstance();
-						calendar.setTime(date);
-						calendarArray[idx]=calendar;											
-					}	
-					dataValue=calendarArray;	
+					if(arrayFieldValue!=null){
+						Calendar[] calendarArray=new Calendar[arrayFieldValue.length];
+						for(int idx=0;idx<arrayFieldValue.length;idx++){
+							String stringValue=arrayFieldValue[idx];
+							long timeStamp=Long.parseLong(stringValue);
+							Date date = new Date(timeStamp);
+							Calendar calendar = Calendar.getInstance();
+							calendar.setTime(date);
+							calendarArray[idx]=calendar;											
+						}	
+						dataValue=calendarArray;
+					}else{
+						dataValue=new Calendar[0];
+					}
 				}
 				if(fieldTypeString.endsWith(DATAFIELD_TYPE_STRING)){
-					dataValue=arrayFieldValue;
-				}					
+					if(arrayFieldValue!=null){
+						dataValue=arrayFieldValue;
+					}else{
+						dataValue=new String[0];
+					}
+				}			
 			}else{
 				String singleFieldValue=currentActivityDataFieldValueVO.getSingleDataFieldValue();				
 				String fieldTypeString=currentActivityDataFieldValueVO.getActivityDataDefinition().getFieldType();				
@@ -2397,7 +2434,8 @@ public class ActivityManagementService {
 		roleQueueVO.setExposedDataFields(exposedDataFieldVOs);
 		List<ActivityStep> containedActivySteps=currentRoleQueue.fetchActivitySteps();
 		
-		HashMap<String, BusinessActivityDefinition> businessActivityDefinitionMap=new HashMap<String,BusinessActivityDefinition>();
+		HashMap<String, BusinessActivityDefinition> businessActivityDefinitionMap=new HashMap<String,BusinessActivityDefinition>();	
+		HashMap<String,Map<String,String>> activitySpaceStepProcessEditorsMappingMap=new HashMap<String,Map<String,String>>();
 		List<ActivityStepVO> containedActivyStepVOs=new ArrayList<ActivityStepVO>();
 		for(ActivityStep currentActivityStep:containedActivySteps){
 			ActivityStepVO currentActivityStepVO=new ActivityStepVO();
@@ -2429,23 +2467,30 @@ public class ActivityManagementService {
 			relatedRoleVO.setRoleName(relatedRole.getRoleName());				
 			currentActivityStepVO.setRelatedRole(relatedRoleVO);
 			
-			BusinessActivityDefinition targetActivityDefinition=businessActivityDefinitionMap.get(currentActivityStep.getActivityType());
+			BusinessActivityDefinition targetActivityDefinition=businessActivityDefinitionMap.get(currentActivityStep.getActivityId());			
 			if(targetActivityDefinition==null){
-				targetActivityDefinition=currentActivityStep.getBusinessActivity().getActivityDefinition();
-				businessActivityDefinitionMap.put(currentActivityStep.getActivityType(), targetActivityDefinition);
+				targetActivityDefinition=currentActivityStep.getBusinessActivity().getActivityDefinition();			
+				businessActivityDefinitionMap.put(currentActivityStep.getActivityId(), targetActivityDefinition);
 			}
 			String[] stepResponse=targetActivityDefinition.getStepDecisionPointChoiseList(currentActivityStep.getActivityStepDefinitionKey());
-			currentActivityStepVO.setStepResponse(stepResponse);	
+			currentActivityStepVO.setStepResponse(stepResponse);			
 			
-			Map<String,String> stepProcessEditorsMap=activitySpace.getBusinessActivityDefinitionStepProcessEditorsInfo(currentActivityStep.getActivityType());					
+			Map<String,String> stepProcessEditorsMap=activitySpaceStepProcessEditorsMappingMap.get(currentActivityStep.getActivityType());
+			if(stepProcessEditorsMap==null){
+				stepProcessEditorsMap=activitySpace.getBusinessActivityDefinitionStepProcessEditorsInfo(currentActivityStep.getActivityType());
+				if(stepProcessEditorsMap!=null){
+					activitySpaceStepProcessEditorsMappingMap.put(currentActivityStep.getActivityType(), stepProcessEditorsMap);
+				}				
+			}							
 			if(stepProcessEditorsMap!=null){
 				String currentStepProcessEditor=stepProcessEditorsMap.get(currentActivityStep.getActivityStepDefinitionKey());
 				if(currentStepProcessEditor!=null){							
 					currentActivityStepVO.setStepProcessEditor(currentStepProcessEditor);							
 				}
 			}			
-			containedActivyStepVOs.add(currentActivityStepVO);	
+			containedActivyStepVOs.add(currentActivityStepVO);
 		}
+		
 		//use this method for better performance
 		BatchOperationHelper boh=ActivityComponentFactory.getBatchOperationHelper();
 		List<ActivityData[]> adal=boh.batchQueryActivityStepsData(currentRoleQueue.getActivitySpaceName(),containedActivySteps, businessActivityDefinitionMap);
@@ -2461,7 +2506,8 @@ public class ActivityManagementService {
 				}
 			}			
 			containedActivyStepVOs.get(i).setActivityDataFieldValueList(activityDataFieldValueVOList);
-		}
+		}		
+		
 		roleQueueVO.setActivitySteps(containedActivyStepVOs);	
 		businessActivityDefinitionMap.clear();
 		businessActivityDefinitionMap=null;
