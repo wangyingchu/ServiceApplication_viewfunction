@@ -111,3 +111,58 @@ ViewFUNCTION 智慧协作管理平台是新一代的、集成式企业工作流�
 * 根据业务需求在活动空间中创建若干***Role Queue（角色队列）***，并将所有的***Role（角色）***与之关联。之后在客户端系统中，用户登录系统，使用与之对应的***Participant（参与者）***模型来获得它所属于的所有***Role（角色）***，再根据***Role（角色）***获得相关联的***Role Queue（角色队列）***。最后通过操作这些***Role Queue（角色队列）***模型对象来获取所有该用户在业务定义中可以访问到的***待处理角色任务***。
 * 根据业务需求，如果需要获取某些特定***Business Activity Definition（业务活动定义）***的所有运行中实例。首先在活动空间中创建***Roster（活动登记表）***并将需要获取的***Business Activity Definition（业务活动定义）***与之关联。之后在客户端系统中操作活动登记表模型对象来获取所需的业务活动实例。
 
+# ViewFUNCTION 智慧协作管理平台用户管理机制
+
+## ❏ ViewFUNCTION 智慧协作管理平台中用户的定义
+
+在 ViewFUNCTION 智慧协作管理平台中`用户`这一概念同时具有以下两个含义：
+
+◼︎ **在 VFBAM Client Application 中的系统操作用户**  - VFBAM Client Application 是 ViewFUNCTION 平台的 Web 客户端，为了使用 ViewFUNCTION 平台的系统功能，使用者首先必须具以一个`用户`的身份登录 VFBAM Client Application（或任何其他客户自定义开发的客户端系统）。
+
+◼︎ **在业务活动（Business Activity）定义中流程活动的实际参与者** - 为了执行业务活动定义中的任务，必须将该任务赋予一个具体的`参与者`（Participant）。在此语境中`参与者`的概念等同于`用户`。
+
+由上述`用户`的两个含义可得出如下总结，**在 ViewFUNCTION 智慧协作管理平台中 `用户` 即是指能够登录VFBAM Client Application 执行常规业务操作（协作通讯类操作，文档管理类操作）的系统用户。又是指已经在活动空间中定义过的业务活动参与者，能够执行与业务流程和角色相关的系统操作**。
+
+## ❏ ViewFUNCTION 智慧协作管理平台中用户数据管理
+
+在 ViewFUNCTION 智慧协作管理平台中用户数据分为 **平台应用使用者数据** 以及 **活动空间参与者数据** 两部分。这两部分数据分别存储在`活动引擎`和`LDAP服务器`中。
+
+**平台应用使用者数据** 是用户登录 VFBAM Client Application（或任何其他客户自定义开发的客户端系统）时使用的用户数据。包括用户名称，登录ID，用户头像和其他详细信息。这些数据存储在 ViewFUNCTION 平台中的 LDAP 服务器（默认安装下为Apache DS）中。ViewFUNCTION 平台通过使用 VFBAM Client Application Web 应用来创建、管理和使用平台应用使用者数据。
+
+**活动空间参与者数据** 是在活动空间中执行业务活动定义中的任务时所使用的用户数据。包括参与者名称、参与者ID以及参与者所属角色等信息。这些数据由 `Central Activity Engine` 通过 Java API 存储在后台的 MongoDB 中。ViewFUNCTION 平台通过使用 VFBAM Admin Application Web 应用来创建和管理活动空间参与者数据。通过使用 VFBAM Client Application Web 应用来使用活动空间参与者数据。
+
+**平台应用使用者数据和活动空间参与者数据在系统的程序设计层面没有关联。实际运行中两者通过使用相同的ID（登录ID和参与者ID）来关联。**
+
+下图为 ViewFUNCTION 智慧协作管理平台中用户管理机制的架构框图：
+![ViewFUNCTION平台用户管理机制架构图](pic/ViewFUNCTION平台用户管理机制架构图.png)
+
+#### ➜ 创建用户流程
+
+在 ViewFUNCTION 智慧协作管理平台中创建用户，需要首先 在 VFBAM Client Application (或任何其他客户自定义开发的客户端系统） 中建立平台应用使用者数据。之后再在 VFBAM Admin Application 中完善活动空间参与者数据。以下是具体的操作步骤：
+
+1. 如下图所示，使用具有系统管理员权限的用户账号登陆 VFBAM Client Application 或任何其他客户自定义开发的客户端系统（系统初始安装后默认建立了系统管理员账号`sysadmin`）,切换到**用户管理**界面。
+![VFBAMClientApp_用户管理界面](pic/VFBAMClientApp_用户管理界面.png)
+
+2. 如下图所示，点击`创建用户`按钮，在弹出的创建用户界面中输入用户详细信息创建新的 *平台应用使用者数据*。
+![VFBAMClientApp_创建用户界面](pic/VFBAMClientApp_创建用户界面.png)  
+在本例中创建了`用户名称`为*赵雪茵*,`登陆ID`为 *zhaoxueyin* 的新 ViewFUNCTION 平台用户。创建成功后该用户的信息会出现在用户列表中。
+![VFBAMClientApp_创建用户完成界面](pic/VFBAMClientApp_创建用户完成界面.png)
+
+3. 如下图所示登录到 VFBAM Admin Application 活动空间管理系统中。切换到对应的活动空间中的`Participants`项目下。可以发现在之前步骤创建的`登陆ID`为 *zhaoxueyin* 的新活动空间参与者数据已经自动创建完成。
+![VFBAMAdminApp参与者管理界面](pic/VFBAMAdminApp参与者管理界面.png)
+
+4. 点击 *zhaoxueyin* 节点，如下图所示，可以在用户详细信息界面中看到用户的详细活动空间相关数据信息。
+![VFBAMAdminApp参与者详细信息界面](pic/VFBAMAdminApp参与者详细信息界面.png)
+
+5. 点击 *Belongs To Roles* 面板，如下图所示，可以在用户详细信息界面中看到用户所属的活动空间`角色`。
+![VFBAMAdminApp参与者所属角色界面](pic/VFBAMAdminApp参与者所属角色界面.png)
+如上图所示，新建立的活动空间参与者不属于任何的活动空间`角色`。如下图所示，可以通过点击 *Modify Belonged Roles* 按钮，显示参与者所属角色编辑界面来进行编辑。
+![VFBAMAdminApp编辑参与者所属角色界面](pic/VFBAMAdminApp编辑参与者所属角色界面.png)
+编辑完成后系统会以列表的形式显示当前参与者所属的角色。
+![VFBAMAdminApp参与者所属角色列表](pic/VFBAMAdminApp参与者所属角色列表.png)
+
+#### ➜ 用户登录验证和用户信息修改
+
+◼︎ **用户登录验证** - 在 ViewFUNCTION 智慧协作管理平台中的所有用户登录验证操作均发生在 VFBAM Client Application (或任何其他客户自定义开发的客户端系统）中。该类应用系统通过使用 REST Service 连接 `Participant Management Service` 进行实际的身份验证操作。Participant Management Service 调用后台存储 **平台应用使用者** 数据的 LDAP 服务器本身的身份验证和安全策略管理机制来执行具体的用户登录验证逻辑。
+
+◼︎ **用户信息修改** - 在 ViewFUNCTION 智慧协作管理平台中用户信息中的 **活动空间参与者数据** 是不能由用户自行修改的，必须由系统的业务管理人员针对业务需求通过使用 VFBAM Admin Application 活动空间管理系统来进行修改。而**平台应用使用者数据**可以由用户自行编辑修改。用户可以登陆 VFBAM Client Application (或任何其他客户自定义开发的客户端系统），在系统中通过使用*设置用户信息*功能来修改用户的详细信息。通过使用*重置用户登录密码*功能来修改用户的登录密码。
