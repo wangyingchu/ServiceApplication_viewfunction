@@ -42,3 +42,72 @@ ViewFUNCTION 智慧协作管理平台主要使用 `Java EE` 技术开发服务�
 ◼︎ **Participant Management Service** 提供平台系统中所有和用户身份信息管理和登陆认证相关的业务功能。所有功能的操作都以`REST API` 的形式提供给外界应用系统使用。Participant Management Service 使用 `LDAP` 规范存储和管理用户身份信息。并通过使用 LDAP 服务器自身的用户身份验证机制和安全策略来执行ViewFUNCTION 平台的用户登录管理。默认安装下Participant Management Service 使用 `ApacheDS` 作为后端的 LDAP服务器。通过使用配置文件中的 LDAP 属性映射，Participant Management Service 也可以透明切换使用任何其他的 LDAP 服务器作为用户身份管理的后端数据源。Participant Management Service 本身是一个可以脱离 ViewFUNCTION 体系独立运行的产品。其功能的实现不依赖于 ViewFUNCTION 系统的其他业务服务层功能组件。
 
 ◼︎ **Scheduler Management Service** ViewFUNCTION 平台的很多功能依赖于定时任务调度和日程提示。Scheduler Management Service 使用 **Quartz** （[www.quartz-scheduler.org](http://www.quartz-scheduler.org) ）技术构建了定时任务调度系统供其他服务层功能组件调用，定时任务调度数据使用 MySQL持久化存储。在目前的 ViewFUNCTION 平台功能范围内，只有当业务活动定义中使用了任务截止日期提醒功能时才需使用 Scheduler Management Service。
+
+
+# ViewFUNCTION 智慧协作管理平台中央活动引擎概述
+
+## ❏ 什么是 中央活动引擎（Central Activity Engine） 
+
+ViewFUNCTION 智慧协作管理平台是新一代的、集成式企业工作流程处理、业务内容管理以及团队协作应用系统。它结合了企业内容管理架构以及全面的业务流程管理框架，能够满足企业的各种复杂内容和流程管理需求。为实现这些功能，ViewFUNCTION 系统平台使用了若干基于 Java 技术的核心功能组件，中央活动引擎（Central Activity Engine）是其中最重要的，它通过提供 `Java API` 的方式实现了所有 ViewFUNCTION 系统平台中与业务流程管理以及企业内容管理相关的功能支持。
+
+下图为中央活动引擎在 ViewFUNCTION 平台中与其他组件的系统交互图： 
+![CentralActivityEngine架构](pic/CentralActivityEngine架构.png) 
+
+在 ViewFUNCTION 平台中中央活动引擎（Central Activity Engine）是以 Java 类库的形式存在的。平台中的 `VFBAM Service Application` 和 `VFBAM Admin Application` 通过使用 JAVA API 调用的方式使用中央活动引擎来处理流程和内容相关的数据。中央活动引擎本身也是通过 JAVA API 调用的方式使用 `Central Process Repository` 处理 流程相关操作，使用 `Central Content Repository` 处理内容相关的操作。
+
+## ❏ 中央活动引擎（Central Activity Engine）逻辑模型概述
+
+为了对业务活动中的流程信息和内容信息提供透明无缝的集成操作，中央活动引擎设计了专门的领域逻辑模型。通过使用 Java API 对这些领域逻辑模型进行操作，可以编程实现 ViewFUNCTION 平台中的所有相关功能。在中央活动引擎的业务领域逻辑模型中最基础的模型对象是 `Activity Space（活动空间）`，所有的其他模型对象都运行在 Activity Space 中。Activity Space 对应了一个使用 ViewFUNCTION 平台的最小单元的业务组织。根据在平台系统中运行时的具体作用，其他的领域逻辑模型可分为`业务活动定义相关领域逻辑模型`和`业务活动运行相关领域逻辑模型`两类。
+
+#### ➜ 业务活动定义相关领域逻辑模型
+
+中央活动引擎中与业务活动定义相关的模型对象共有以下三类。它们共同定义了在一个 Activity Space 中包含的业务活动的具体运行细节：
+
+◼︎ **Participant（参与者）** 参与者代表了一个活动空间（业务组织）中所有参与业务运行的真实人员。每一个参与者都拥有一个全局唯一的ID。参与者是执行业务活动定义中的节点任务的真正主体。在实践中可以认为角色类似于一个企业组织中的一个业务人员。
+
+◼︎ **Role（角色）** 角色代表了一个活动空间（业务组织）中按照特定的业务规则划分而具有共同特性的一组参与者。通常情况下角色是用来与业务活动定义中的节点任务进行关联的逻辑模型。在实践中可以认为角色类似于一个企业组织中的一个部门。
+
+◼︎ **Business Activity Definition（业务活动定义）** 业务活动定义通过使用工作流引擎的流程定义技术来表示具体的流程运行的节点任务跳转逻辑以及在整个流程中和各个流程节点中可以使用的数据项目的定义。
+
+下图为业务活动定义相关领域逻辑模型之间的相互关系：
+![ActivityEngineLogicComponents_definitionPart](pic/ActivityEngineLogicComponents_definitionPart.png)
+
+在一个特定的 Activity Space 中可以包含有任意数量的`Participant（参与者）`,`Role（角色）`以及`Business Activity Definition（业务活动定义）`。一个**Participant（参与者）**可以隶属于任意数量的**Role（角色）**。每一个**Role（角色）**都可以关联到任意**Business Activity Definition（业务活动定义）**中的任意任务节点上。同时根据特定的业务需求也可以将**Participant（参与者）**与任意**Business Activity Definition（业务活动定义）**中的任意任务节点进行关联。
+
+为了在实践中使用 ViewFUNCTION 平台，必须首先按照以下步骤定义好所需的`业务活动定义相关领域逻辑模型`
+
+1. 创建 ***Activity Space（活动空间）***。
+2. 在 ***Activity Space（活动空间）***中根据业务组织中的行政或业务规则创建所需的 ***Role（角色）***。一般情况下角色与一个业务组织中的业务部门一一对应。
+3. 在 ***Activity Space（活动空间）***中根据业务组织中的人员信息创建所需的 ***Participant（参与者）***。一般情况下一个参与者与业务组织中的一个自然人相对应。
+4. 根据企业的行政或业务规则将所有的***Participant（参与者）***添加到他所属的 ***Role（角色）***中。一个参与者可以隶属于任意数量的角色。
+5. 根据业务需求设计并部署具体的***Business Activity Definition（业务活动定义）***。在业务活动定义中各个流程任务节点相关的人员或部门必须与活动空间中已经定义过的角色相对应（`关联`角色与流程任务节点）
+
+#### ➜ 业务活动运行相关领域逻辑模型
+
+当业务活动定义相关领域逻辑模型数据在活动空间中定义完毕后就可以创建已经部署了的业务活动定义的运行时实例。在运行中活动空间中会同事存在数量众多的各种不同业务活动定义的运行时实例。每个业务活动实例上还包含若干与角色或参与者相关的业务活动节点任务。为了按照业务需求获取这些数据，需要使用业务活动运行相关领域逻辑模型。
+
+中央活动引擎中负责在平台运行时处理具体业务操作的模型对象共有以下三类。它们共同定义了如何在一个 Activity Space 中获取特定业务活动实例或业务活动流程任务节点的操作方式。
+
+◼︎ **Participant Task（参与者任务）** 每一个参与者都与一个特定的参与者任务模型对象相对应，通过使用参与者任务模型对象可以获取到一个特定的参与者在活动空间中所有正在处理中的业务活动节点任务。
+
+◼︎ **Role Queue（角色队列）** 角色队列与若干个特定的角色相互关联，通过使用角色队列模型对象可以获取到与它相关联的所有角色在活动空间中所有等待处理的业务活动节点任务。
+
+◼︎ **Roster（活动登记表）** 活动登记表与若干个特定的业务活动定义相互关联。通过使用活动登记表模型对象可以获取到与它相关联的所有业务活动定义在活动空间中正在运行中的业务活动实例。
+
+下图为业务活动运行相关领域逻辑模型之间的相互关系：
+![ActivityEngineLogicComponents_runtime.png](pic/ActivityEngineLogicComponents_runtime.png)
+
+当一个**Business Activity Definition（业务活动定义）**相关的业务活动实例创建之后，根据该业务活动定义中的流程设计，会自动生成若干流程任务节点。如果在流程设计中任务节点的处理者是***角色***，那么这些任务节点被称为`待处理角色任务`。当任务节点被分配给具体的***执行人（参与者）***后，这些任务节点则被称为`参与者工作任务`。
+
+在一个活动空间中每一个**Participant（参与者）**都有一个对应的`Participant Task（参与者任务）`与之关联。通过使用**Participant Task（参与者任务）**对象可以获取到一个参与者在活动空间中所有正在处理中的`参与者工作任务`列表，可以通过遍历该列表处理参与者正在工作中的任务节点。
+
+`Role Queue（角色队列）`是用来获取与特定角色相关的`待处理角色任务`的模型对象。在一个特定的 Activity Space 中可以包含有任意数量的**Role Queue（角色队列）**。每一个**Role Queue（角色队列）**都可以与任意数量的**Role（角色）**相关联（同一时间一个角色可以与多个角色队列相关联）。使用中可以通过角色队列模型对象获取到所有与该模型相关联的**Role（角色）**的`待处理角色任务`列表。
+
+`Roster（活动登记表）`是用来获取业务活动实例本身的模型对象。在一个特定的 Activity Space 中可以包含有任意数量的**Roster（活动登记表）**。每一个**Roster（活动登记表）**都可以和任意数量的**Business Activity Definition（业务活动定义）**相关联（但是同一时间一个业务活动定义只能与一个活动登记表相关联）。使用中可以通过角色队列模型获取到所有与它相关联的业务活动定义的运行中实例。
+
+在实践中推荐使用以下方式在客户端业务系统中操作 `业务活动运行相关领域逻辑模型`：
+
+* 在客户端系统中，用户登录系统，使用与之对应的***Participant（参与者）***模型来获得相关联的***Participant Task（参与者任务）***。通过使用参与者任务模型对象来获取该用户所有待处理的工作中任务。
+* 根据业务需求在活动空间中创建若干***Role Queue（角色队列）***，并将所有的***Role（角色）***与之关联。之后在客户端系统中，用户登录系统，使用与之对应的***Participant（参与者）***模型来获得它所属于的所有***Role（角色）***，再根据***Role（角色）***获得相关联的***Role Queue（角色队列）***。最后通过操作这些***Role Queue（角色队列）***模型对象来获取所有该用户在业务定义中可以访问到的***待处理角色任务***。
+* 根据业务需求，如果需要获取某些特定***Business Activity Definition（业务活动定义）***的所有运行中实例。首先在活动空间中创建***Roster（活动登记表）***并将需要获取的***Business Activity Definition（业务活动定义）***与之关联。之后在客户端系统中操作活动登记表模型对象来获取所需的业务活动实例。
+
