@@ -164,6 +164,7 @@ ViewFUNCTION 智慧协作管理平台用户客户端包含有插件系统。可�
 ![预览PDF格式文件界面](pic/vf17.jpg)
 
 
+
 # ViewFUNCTION 智慧协作管理平台系统管理客户端介绍
 
 ViewFUNCTION 智慧协作管理平台系统管理客户端程序是一套使用***Vaadin***技术开发的Web应用程序。它是系统管理员执行各种系统管理任务所使用的主要工具。主要具有以下主要功能：
@@ -195,11 +196,12 @@ ViewFUNCTION 智慧协作管理平台系统管理客户端程序是一套使用*
 ![预览PDF格式文件界面](pic/vf23.png)
 
 
+
 # ViewFUNCTION 智慧协作管理平台中央活动引擎概述
 
 ## ❏ 什么是 中央活动引擎（Central Activity Engine）
 
-ViewFUNCTION 智慧协作管理平台是新一代的、集成式企业工作流程处理、业务内容管理以及团队协作应用系统。它结合了企业内容管理架构以及全面的业务流程管理框架，能够满足企业的各种复杂内容和流程管理需求。为实现这些功能，ViewFUNCTION 系统平台使用了若干基于 Java 技术的核心功能组件，中央活动引擎（Central Activity Engine）是其中最重要的，它通过提供 `Java API` 的方式实现了所有 ViewFUNCTION 系统平台中与业务流程管理以及企业内容管理相关的功能支持。
+ViewFUNCTION 系统平台使用了若干基于 Java 技术的核心功能组件，中央活动引擎（Central Activity Engine）是其中最重要的组件，它通过提供 `Java API` 的方式实现了所有 ViewFUNCTION 系统平台中与业务流程管理以及企业内容管理相关的功能支持。
 
 下图为中央活动引擎在 ViewFUNCTION 平台中与其他组件的系统交互图：
 ![CentralActivityEngine架构](pic/CentralActivityEngine架构.png)
@@ -261,3 +263,21 @@ ViewFUNCTION 智慧协作管理平台是新一代的、集成式企业工作流�
 * 在客户端系统中，用户登录系统，使用与之对应的***Participant（参与者）***模型来获得相关联的***Participant Task（参与者任务）***。通过使用参与者任务模型对象来获取该用户所有待处理的工作中任务。
 * 根据业务需求在活动空间中创建若干***Role Queue（角色队列）***，并将所有的***Role（角色）***与之关联。之后在客户端系统中，用户登录系统，使用与之对应的***Participant（参与者）***模型来获得它所属于的所有***Role（角色）***，再根据***Role（角色）***获得相关联的***Role Queue（角色队列）***。最后通过操作这些***Role Queue（角色队列）***模型对象来获取所有该用户在业务定义中可以访问到的***待处理角色任务***。
 * 根据业务需求，如果需要获取某些特定***Business Activity Definition（业务活动定义）***的所有运行中实例。首先在活动空间中创建***Roster（活动登记表）***并将需要获取的***Business Activity Definition（业务活动定义）***与之关联。之后在客户端系统中操作活动登记表模型对象来获取所需的业务活动实例。
+
+
+
+## ➜ 系统功能模块项目与参考资料
+
+**功能模块项目地址**
+
+[平台基础服务系统(https://github.com/wangyingchu/ServiceApplication_viewfunction)](https://github.com/wangyingchu/ServiceApplication_viewfunction)
+
+[平台用户客户端(https://github.com/wangyingchu/ClientApplication_viewfunction)](https://github.com/wangyingchu/ClientApplication_viewfunction)
+
+[平台系统管理客户端(https://github.com/wangyingchu/AdminApplication_viewfunction)](https://github.com/wangyingchu/AdminApplication_viewfunction)
+
+[中央活动引擎(https://github.com/wangyingchu/CentralActivityEngine_viewfunction)](https://github.com/wangyingchu/CentralActivityEngine_viewfunction)
+
+[中央流程存储库(https://github.com/wangyingchu/CentralProcessRepository_viewfunction)](https://github.com/wangyingchu/CentralProcessRepository_viewfunction)
+
+[中央内容存储库(https://github.com/wangyingchu/CentralContentRepository_viewfunction)](https://github.com/wangyingchu/CentralContentRepository_viewfunction)
